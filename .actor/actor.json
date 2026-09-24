@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "techpath-learning-intelligence",
+  "title": "TechPath Learning Intelligence Engine",
+  "description": "Turn the scattered technical-learning web into a structured, dependency-aware development pathway with skill checks, projects, and hackathon matches.",
+  "version": "0.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "dockerfile": "../Dockerfile",
+  "input": "./input_schema.json"
+}

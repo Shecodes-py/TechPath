@@ -1,0 +1,645 @@
+{
+  "profile": {
+    "goal": "Machine Learning Engineer",
+    "currentLevel": "Beginner",
+    "knownSkills": [
+      "Python basics"
+    ],
+    "hoursPerWeek": 8,
+    "location": "Nigeria",
+    "interests": [
+      "Healthcare AI",
+      "NLP"
+    ],
+    "learningPreferences": [
+      "video",
+      "hands-on"
+    ],
+    "depth": "deep",
+    "geminiApiKey": null,
+    "apifyToken": "your_apify_token_here"
+  },
+  "targetRole": "Machine Learning Engineer",
+  "summaryPitch": "Tailored Machine Learning Engineer roadmap for a Beginner in Nigeria focusing on Healthcare AI. Designed with strict prerequisite ordering (Foundations \u2192 Core \u2192 Specialization \u2192 Build \u2192 Prove \u2192 Advance).",
+  "skillGaps": [
+    {
+      "skill": "Linear Algebra & Statistics for ML",
+      "category": "Foundation",
+      "isRequiredFor": "Supervised Learning, Optimization & Model Evaluation",
+      "confidence": 0.9,
+      "explanation": "Prerequisite for understanding model weights, loss functions, and probability."
+    },
+    {
+      "skill": "Data Structures & Algorithms",
+      "category": "Core",
+      "isRequiredFor": "System Efficiency & Coding Interviews",
+      "confidence": 0.88,
+      "explanation": "Critical for writing scalable algorithms and building production systems."
+    }
+  ],
+  "roadmap": [
+    {
+      "stageNumber": 1,
+      "stageName": "1. Foundations",
+      "description": "Master core programming, version control, and prerequisite mathematics.",
+      "focusTopics": [
+        "Python Basics",
+        "Git & GitHub",
+        "NumPy & Data Manipulation",
+        "Basic Statistics"
+      ],
+      "prerequisitesRequired": [
+        "None"
+      ],
+      "resources": [
+        {
+          "title": "Python for Everybody Specialization",
+          "url": "https://www.py4e.com/",
+          "resourceType": "course",
+          "difficulty": "Beginner",
+          "estimatedHours": 15,
+          "skillsTaught": [
+            "Python syntax",
+            "Data Structures",
+            "Web Scraping"
+          ],
+          "prerequisites": [],
+          "summary": "Comprehensive beginner introduction to Python programming.",
+          "isFree": true
+        },
+        {
+          "title": "Git and GitHub for Beginners - Crash Course",
+          "url": "https://www.youtube.com/watch?v=RGOj5yH7evE",
+          "resourceType": "youtube",
+          "difficulty": "Beginner",
+          "estimatedHours": 2,
+          "skillsTaught": [
+            "Git",
+            "Version Control",
+            "GitHub repositories"
+          ],
+          "prerequisites": [],
+          "summary": "Hands-on tutorial on tracking code and working with GitHub.",
+          "isFree": true
+        }
+      ],
+      "assessments": [
+        {
+          "id": "quiz-stage-1",
+          "stage": "1. Foundations",
+          "questionType": "coding_prompt",
+          "question": "Write a Python function `filter_even_squares(numbers)` that takes a list of integers, filters out odd numbers, squares the even numbers, and returns the result in reverse order. Explain the time and space complexity.",
+          "options": null,
+          "correctAnswerOrRubric": "Function uses list comprehension or loop; time complexity O(N), space complexity O(N).",
+          "explanation": "Tests fundamental Python sequence operations, list manipulation, and algorithmic complexity awareness."
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-stage-1",
+          "title": "Automated Data Processing & Extraction CLI",
+          "stage": "1. Foundations",
+          "projectType": "mini_project",
+          "problemStatement": "Build a command-line script that ingests CSV/JSON dataset files, performs validation checks, and outputs formatted statistics.",
+          "objectives": [
+            "Demonstrate proficiency in Python file I/O",
+            "Implement error handling",
+            "Use NumPy/Pandas data structures"
+          ],
+          "skillsTested": [
+            "Python",
+            "Pandas",
+            "CLI design"
+          ],
+          "suggestedStack": [
+            "Python 3.11",
+            "Pandas",
+            "Argparse"
+          ],
+          "deliverables": [
+            "Python CLI script",
+            "Sample dataset",
+            "README documentation"
+          ],
+          "evaluationRubric": [
+            "Correct CLI argument handling",
+            "Clean code modularity",
+            "Robust error logging"
+          ]
+        }
+      ]
+    },
+    {
+      "stageNumber": 2,
+      "stageName": "2. Core Skills",
+      "description": "Build solid fundamentals in Data Structures, Data Analysis, and Supervised Machine Learning.",
+      "focusTopics": [
+        "Data Structures & Algorithms",
+        "SQL & Database Queries",
+        "Supervised Learning",
+        "Scikit-Learn"
+      ],
+      "prerequisitesRequired": [
+        "Python Programming",
+        "Basic Math"
+      ],
+      "resources": [
+        {
+          "title": "Scikit-Learn Official Tutorials & User Guide",
+          "url": "https://scikit-learn.org/stable/tutorial/index.html",
+          "resourceType": "documentation",
+          "difficulty": "Intermediate",
+          "estimatedHours": 10,
+          "skillsTaught": [
+            "Scikit-Learn",
+            "Model Training",
+            "Evaluation Metrics"
+          ],
+          "prerequisites": [
+            "Python basics",
+            "NumPy"
+          ],
+          "summary": "Official step-by-step guide to supervised and unsupervised machine learning algorithms.",
+          "isFree": true
+        }
+      ],
+      "assessments": [
+        {
+          "id": "quiz-stage-2",
+          "stage": "2. Core Skills",
+          "questionType": "conceptual",
+          "question": "Explain overfitting in machine learning. How do train/test split, cross-validation, and regularization prevent it?",
+          "options": null,
+          "correctAnswerOrRubric": "Overfitting occurs when model memorizes training noise. Prevention includes cross-validation, L1/L2 regularization, and early stopping.",
+          "explanation": "Verifies core understanding of ML generalization and evaluation."
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-stage-2",
+          "title": "Supervised Prediction Engine & Evaluation Pipeline",
+          "stage": "2. Core Skills",
+          "projectType": "integration_project",
+          "problemStatement": "Develop an end-to-end classification pipeline that cleans tabular data, engineers features, trains multiple baseline models, and evaluates ROC-AUC.",
+          "objectives": [
+            "Feature engineering",
+            "Hyperparameter tuning",
+            "Model selection"
+          ],
+          "skillsTested": [
+            "Scikit-Learn",
+            "Feature Scaling",
+            "Cross-Validation"
+          ],
+          "suggestedStack": [
+            "Python",
+            "Scikit-Learn",
+            "Matplotlib"
+          ],
+          "deliverables": [
+            "Jupyter notebook",
+            "Trained model pkl",
+            "Performance report"
+          ],
+          "evaluationRubric": [
+            "Proper cross-validation setup",
+            "No data leakage",
+            "Clear metric interpretation"
+          ]
+        }
+      ]
+    },
+    {
+      "stageNumber": 3,
+      "stageName": "3. Specialization",
+      "description": "Dive deep into modern Deep Learning, Neural Networks, PyTorch, and domain application in Healthcare AI.",
+      "focusTopics": [
+        "Neural Networks & Backpropagation",
+        "PyTorch",
+        "Computer Vision / NLP",
+        "Healthcare AI"
+      ],
+      "prerequisitesRequired": [
+        "Core ML Algorithms",
+        "Linear Algebra",
+        "Python"
+      ],
+      "resources": [
+        {
+          "title": "Deep Learning Specialization - DeepLearning.AI",
+          "url": "https://www.coursera.org/specializations/deep-learning",
+          "resourceType": "course",
+          "difficulty": "Intermediate",
+          "estimatedHours": 30,
+          "skillsTaught": [
+            "PyTorch",
+            "Neural Networks",
+            "Convolutional Networks",
+            "Transformers"
+          ],
+          "prerequisites": [
+            "Python",
+            "Linear Algebra"
+          ],
+          "summary": "Gold-standard course covering deep learning architectures and optimization.",
+          "isFree": true
+        }
+      ],
+      "assessments": [
+        {
+          "id": "quiz-stage-3",
+          "stage": "3. Specialization",
+          "questionType": "coding_prompt",
+          "question": "Implement a custom PyTorch `nn.Module` for a 3-layer feedforward network with ReLU activation and Dropout. Write the training loop with CrossEntropyLoss.",
+          "options": null,
+          "correctAnswerOrRubric": "Module defines __init__ and forward methods; loss calculation and optimizer.step() inside loop.",
+          "explanation": "Validates hands-on PyTorch architecture setup and training dynamics."
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-stage-3",
+          "title": "Healthcare AI Diagnostic Model Implementation",
+          "stage": "3. Specialization",
+          "projectType": "portfolio_project",
+          "problemStatement": "Build a PyTorch model specifically tailored for Healthcare AI, processing complex data inputs to predict outcomes.",
+          "objectives": [
+            "Apply PyTorch to Healthcare AI",
+            "Optimize training loss",
+            "Handle class imbalance"
+          ],
+          "skillsTested": [
+            "PyTorch",
+            "Domain Data Handling",
+            "Model Fine-tuning"
+          ],
+          "suggestedStack": [
+            "PyTorch",
+            "Torchvision / HuggingFace",
+            "FastAPI"
+          ],
+          "deliverables": [
+            "Code repository",
+            "Trained weights",
+            "FastAPI inference service"
+          ],
+          "evaluationRubric": [
+            "Functional model training",
+            "Domain validation metrics",
+            "API inference efficiency"
+          ]
+        }
+      ]
+    },
+    {
+      "stageNumber": 4,
+      "stageName": "4. Build",
+      "description": "Transform standalone models into robust, deployed production microservices and REST APIs.",
+      "focusTopics": [
+        "FastAPI / Flask",
+        "Docker Containerization",
+        "API Deployment",
+        "Model Serving"
+      ],
+      "prerequisitesRequired": [
+        "PyTorch/Model Training",
+        "Python"
+      ],
+      "resources": [
+        {
+          "title": "Deploying Machine Learning Models with FastAPI & Docker",
+          "url": "https://fastapi.tiangolo.com/tutorial/",
+          "resourceType": "documentation",
+          "difficulty": "Intermediate",
+          "estimatedHours": 8,
+          "skillsTaught": [
+            "FastAPI",
+            "Async endpoints",
+            "Docker deployment"
+          ],
+          "prerequisites": [
+            "Python"
+          ],
+          "summary": "Production guide for serving ML model predictions via REST APIs.",
+          "isFree": true
+        }
+      ],
+      "assessments": [
+        {
+          "id": "quiz-stage-4",
+          "stage": "4. Build",
+          "questionType": "conceptual",
+          "question": "What is the difference between batch inference and real-time API inference? How do Docker containers ensure reproducibility?",
+          "options": null,
+          "correctAnswerOrRubric": "Real-time serves low-latency single requests; batch processes bulk data offline. Docker encapsulates OS, dependencies, and code environment.",
+          "explanation": "Tests production deployment and software engineering principles."
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-stage-4",
+          "title": "Containerized ML Inference Microservice",
+          "stage": "4. Build",
+          "projectType": "integration_project",
+          "problemStatement": "Wrap your trained model inside a Dockerized FastAPI application with request validation and health endpoints.",
+          "objectives": [
+            "Expose REST API endpoints",
+            "Containerize app with Docker",
+            "Test latency and payload throughput"
+          ],
+          "skillsTested": [
+            "FastAPI",
+            "Docker",
+            "Pydantic",
+            "Uvicorn"
+          ],
+          "suggestedStack": [
+            "FastAPI",
+            "Docker",
+            "Python 3.11"
+          ],
+          "deliverables": [
+            "Dockerfile",
+            "App source code",
+            "Deployed API link or container build"
+          ],
+          "evaluationRubric": [
+            "Container compiles without error",
+            "Input validation works",
+            "Clean API documentation"
+          ]
+        }
+      ]
+    },
+    {
+      "stageNumber": 5,
+      "stageName": "5. Prove",
+      "description": "Validate your skills in real-world environments through hackathons, open-source contributions, and peer reviews.",
+      "focusTopics": [
+        "Hackathon Participation",
+        "Open Source PRs",
+        "Technical Blogging",
+        "Peer Code Reviews"
+      ],
+      "prerequisitesRequired": [
+        "Model Training",
+        "REST APIs",
+        "Git"
+      ],
+      "resources": [
+        {
+          "title": "Apify & She Code Africa Open-Source Guidelines",
+          "url": "https://apify.com/store",
+          "resourceType": "documentation",
+          "difficulty": "Intermediate",
+          "estimatedHours": 5,
+          "skillsTaught": [
+            "Apify Actor development",
+            "Cloud deployment",
+            "Web intelligence"
+          ],
+          "prerequisites": [
+            "Python / JS",
+            "Git"
+          ],
+          "summary": "Guide on building reusable cloud tools and submitting to open source ecosystems.",
+          "isFree": true
+        }
+      ],
+      "assessments": [
+        {
+          "id": "quiz-stage-5",
+          "stage": "5. Prove",
+          "questionType": "coding_prompt",
+          "question": "Draft an Open Source Pull Request summary detailing a bug fix or feature addition, including reproduction steps and test results.",
+          "options": null,
+          "correctAnswerOrRubric": "Clear title, problem description, solution implementation details, and verification commands.",
+          "explanation": "Evaluates professional open-source communication and collaboration."
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-stage-5",
+          "title": "Apify Open Source Cloud Tool / Actor",
+          "stage": "5. Prove",
+          "projectType": "portfolio_project",
+          "problemStatement": "Publish a reusable Apify Actor that automates web data extraction and provides structured API output.",
+          "objectives": [
+            "Create input schema",
+            "Store dataset output",
+            "Publish to Apify Store"
+          ],
+          "skillsTested": [
+            "Apify SDK",
+            "Python",
+            "API design"
+          ],
+          "suggestedStack": [
+            "Apify Python SDK",
+            "Docker",
+            "Pydantic"
+          ],
+          "deliverables": [
+            "Published Apify Actor",
+            "Public GitHub repository"
+          ],
+          "evaluationRubric": [
+            "Valid input/output schema",
+            "Error-free execution",
+            "Comprehensive README"
+          ]
+        }
+      ]
+    },
+    {
+      "stageNumber": 6,
+      "stageName": "6. Advance",
+      "description": "Expand into cutting-edge architectures: Large Language Models, RAG Systems, AI Agents, and MLOps.",
+      "focusTopics": [
+        "RAG Systems & Vector DBs",
+        "AI Agents & LangChain/LlamaIndex",
+        "MLOps & Model Monitoring"
+      ],
+      "prerequisitesRequired": [
+        "All Stages 1 to 5 satisfied"
+      ],
+      "resources": [
+        {
+          "title": "Full Stack LLM & RAG Application Architecture",
+          "url": "https://www.deeplearning.ai/short-courses/",
+          "resourceType": "course",
+          "difficulty": "Advanced",
+          "estimatedHours": 12,
+          "skillsTaught": [
+            "RAG",
+            "Vector Search",
+            "LangChain",
+            "Evaluation"
+          ],
+          "prerequisites": [
+            "Python",
+            "PyTorch / Transformers"
+          ],
+          "summary": "Advanced building blocks for AI agents, retrieval systems, and LLM applications.",
+          "isFree": true
+        }
+      ],
+      "assessments": [
+        {
+          "id": "quiz-stage-6",
+          "stage": "6. Advance",
+          "questionType": "conceptual",
+          "question": "How does Retrieval-Augmented Generation (RAG) overcome LLM context window limits and hallucinations? Compare sparse vs dense vector retrieval.",
+          "options": null,
+          "correctAnswerOrRubric": "RAG fetches relevant chunked documents via embedding cosine similarity to ground response. Dense embeddings capture semantic intent; sparse keywords capture exact terms.",
+          "explanation": "Assesses mastery of modern LLM architecture choices."
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-stage-6",
+          "title": "Autonomous AI Agent System with Tool Calling",
+          "stage": "6. Advance",
+          "projectType": "portfolio_project",
+          "problemStatement": "Develop a multi-tool AI Agent capable of web searching, data processing, and generating automated reports.",
+          "objectives": [
+            "Implement tool selection logic",
+            "Enforce safety boundaries",
+            "Manage long-running tasks"
+          ],
+          "skillsTested": [
+            "LLM APIs",
+            "Vector Database",
+            "Agentic Workflows"
+          ],
+          "suggestedStack": [
+            "Python",
+            "Gemini API",
+            "ChromaDB / Qdrant"
+          ],
+          "deliverables": [
+            "Agent architecture codebase",
+            "Live interactive demo"
+          ],
+          "evaluationRubric": [
+            "Reliable tool execution",
+            "Minimal hallucination",
+            "Scalable vector index"
+          ]
+        }
+      ]
+    }
+  ],
+  "capstone": {
+    "title": "Production-Grade Healthcare AI Intelligence & Decision System",
+    "domainTarget": "Machine Learning Engineer - Healthcare AI",
+    "problemStatement": "Develop an end-to-end, deployed AI platform designed for Healthcare AI. The system ingests raw domain data, applies specialized PyTorch models, and exposes a real-time containerized API.",
+    "objectives": [
+      "Curate and preprocess realistic datasets for Healthcare AI",
+      "Train and evaluate a high-performing PyTorch neural network",
+      "Deploy a containerized FastAPI microservice with automated testing",
+      "Integrate continuous model monitoring and automated evaluation"
+    ],
+    "skillsTested": [
+      "Python",
+      "PyTorch",
+      "FastAPI",
+      "Docker",
+      "Scikit-Learn",
+      "Data Pipeline"
+    ],
+    "suggestedStack": [
+      "Python 3.11",
+      "PyTorch",
+      "FastAPI",
+      "Docker",
+      "Streamlit",
+      "Apify"
+    ],
+    "deliverables": [
+      "Full Git Repository with clean commit history",
+      "Dockerfile & docker-compose.yml setup",
+      "Live deployed demo (Render/HuggingFace Spaces/AWS)",
+      "System architecture document and benchmark report"
+    ],
+    "milestones": [
+      "Milestone 1: Data acquisition and exploratory data analysis",
+      "Milestone 2: Baseline ML model vs PyTorch deep learning model",
+      "Milestone 3: FastAPI microservice wrapper and Docker containerization",
+      "Milestone 4: Interactive frontend dashboard and deployment"
+    ],
+    "evaluationCriteria": [
+      "Model F1-Score / Accuracy on test set (>0.85 target)",
+      "API endpoint p95 latency under 200ms",
+      "Code coverage and clean engineering standards",
+      "Clarity of README and user documentation"
+    ],
+    "extensionIdeas": [
+      "Add RAG pipeline to allow querying domain medical/tech guidelines",
+      "Integrate real-time notification alerts for anomalous model outputs"
+    ]
+  },
+  "opportunities": [
+    {
+      "title": "Apify \u00d7 She Code Africa Hackathon 2026",
+      "organizer": "Apify & She Code Africa",
+      "opportunityType": "hackathon",
+      "deadline": "2026-10-15",
+      "eligibility": "Open to developers, students, and tech learners across Africa",
+      "remoteStatus": "Remote",
+      "requiredSkills": [
+        "Python",
+        "Web Crawling",
+        "API Development",
+        "AI/ML"
+      ],
+      "difficultyEstimate": "Beginner to Intermediate friendly",
+      "applicationUrl": "https://apify.com/hackathons",
+      "sourceUrl": "https://apify.com/",
+      "matchReason": "Directly aligns with your growth stage and goal (Machine Learning Engineer). Offers mentorship, cash prizes, and Apify Actor publishing exposure."
+    },
+    {
+      "title": "Kaggle Community Healthcare AI Challenge",
+      "organizer": "Kaggle Competitions",
+      "opportunityType": "competition",
+      "deadline": "2026-11-01",
+      "eligibility": "Global community",
+      "remoteStatus": "Remote",
+      "requiredSkills": [
+        "Python",
+        "Scikit-Learn",
+        "PyTorch",
+        "Data Science"
+      ],
+      "difficultyEstimate": "Intermediate",
+      "applicationUrl": "https://www.kaggle.com/competitions",
+      "sourceUrl": "https://www.kaggle.com/",
+      "matchReason": "Perfect match for building practical proof in Healthcare AI using real tabular and image datasets."
+    },
+    {
+      "title": "Open Source AI Engineering Fellowship",
+      "organizer": "Global Tech Talent Network",
+      "opportunityType": "internship",
+      "deadline": "2026-12-01",
+      "eligibility": "Early-career developers & students",
+      "remoteStatus": "Remote",
+      "requiredSkills": [
+        "Python",
+        "Git",
+        "REST APIs"
+      ],
+      "difficultyEstimate": "Intermediate",
+      "applicationUrl": "https://shecodeafrica.org/",
+      "sourceUrl": "https://shecodeafrica.org/",
+      "matchReason": "Provides mentorship bridge into full-time remote engineering roles."
+    }
+  ],
+  "sources": [
+    "https://www.py4e.com/",
+    "https://scikit-learn.org/",
+    "https://coursera.org/",
+    "https://fastapi.tiangolo.com/",
+    "https://apify.com/store"
+  ],
+  "generatedAt": "2026-09-23T19:51:05.146638Z"
+}

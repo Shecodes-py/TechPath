@@ -1,0 +1,80 @@
+{
+  "title": "TechPath Learning Intelligence Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "goal": {
+      "title": "Target Tech Role",
+      "type": "string",
+      "description": "The technical career role or goal you want to achieve (e.g. 'Machine Learning Engineer', 'Software Engineer', 'Data Scientist', 'AI Engineer').",
+      "default": "Machine Learning Engineer",
+      "editor": "textfield"
+    },
+    "currentLevel": {
+      "title": "Current Experience Level",
+      "type": "string",
+      "description": "Your current overall level in this technical domain.",
+      "enum": ["Beginner", "Intermediate", "Advanced"],
+      "default": "Beginner",
+      "editor": "select"
+    },
+    "knownSkills": {
+      "title": "Known Skills",
+      "type": "array",
+      "description": "List of skills, programming languages, or tools you already know well.",
+      "default": ["Python basics"],
+      "editor": "json"
+    },
+    "hoursPerWeek": {
+      "title": "Hours per Week",
+      "type": "integer",
+      "description": "Estimated hours per week dedicated to learning.",
+      "default": 8,
+      "editor": "number"
+    },
+    "location": {
+      "title": "Location / Country",
+      "type": "string",
+      "description": "Learner's country/region for localized opportunity & hackathon matching.",
+      "default": "Nigeria",
+      "editor": "textfield"
+    },
+    "interests": {
+      "title": "Niche & Domain Interests",
+      "type": "array",
+      "description": "Specific subfields or domain applications of interest (e.g. ['NLP', 'healthcare AI']).",
+      "default": ["NLP", "healthcare AI"],
+      "editor": "json"
+    },
+    "learningPreferences": {
+      "title": "Learning Preferences",
+      "type": "array",
+      "description": "Preferred content formats (e.g. ['video', 'hands-on', 'docs', 'interactive']).",
+      "default": ["video", "hands-on"],
+      "editor": "json"
+    },
+    "depth": {
+      "title": "Roadmap Depth",
+      "type": "string",
+      "description": "Level of detail for the generated path.",
+      "enum": ["standard", "deep"],
+      "default": "deep",
+      "editor": "select"
+    },
+    "geminiApiKey": {
+      "title": "Gemini API Key",
+      "type": "string",
+      "description": "Google Gemini API key for AI-driven skill dependency graph & assessment generation. Can also be set as GEMINI_API_KEY environment variable.",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "apifyToken": {
+      "title": "Apify API Token",
+      "type": "string",
+      "description": "Optional Apify API token for live web scraping & search discovery.",
+      "editor": "textfield",
+      "isSecret": true
+    }
+  },
+  "required": ["goal"]
+}
