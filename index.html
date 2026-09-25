@@ -239,6 +239,9 @@
         <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
           🗺️ 6-Stage Tech Roadmap
         </button>
+        <button onclick="switchTab('leetcode')" id="tab-btn-leetcode" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
+          💻 LeetCode Vault (<span id="leetcodeCountBadge">0</span>)
+        </button>
         <button onclick="switchTab('capstone')" id="tab-btn-capstone" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
           🏆 Portfolio Capstone Brief
         </button>
@@ -289,7 +292,22 @@
         </div>
       </div>
 
-      <!-- TAB 4: PORTFOLIO CAPSTONE -->
+      <!-- TAB 4: LEETCODE & PRACTICE CODING VAULT -->
+      <div id="tab-leetcode" class="hidden space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">💻 LeetCode & Practice Coding Vault</h3>
+            <p class="text-xs text-slate-500">Curated data structures, algorithms, and system design questions across stages.</p>
+          </div>
+          <span class="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="leetcodeCountText">0 problems</span>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4" id="leetcodeGrid">
+          <!-- Dynamically populated practice problems across stages -->
+        </div>
+      </div>
+
+      <!-- TAB 5: PORTFOLIO CAPSTONE -->
       <div id="tab-capstone" class="hidden space-y-6">
         <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
           <div class="flex items-center gap-3">
@@ -305,7 +323,7 @@
         </div>
       </div>
 
-      <!-- TAB 5: OPPORTUNITIES & HACKATHONS -->
+      <!-- TAB 6: OPPORTUNITIES & HACKATHONS -->
       <div id="tab-opportunities" class="hidden space-y-6">
         <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
           <div>
@@ -538,6 +556,51 @@
         `;
       }
 
+      // Collect all LeetCode & Coding Practice problems across all stages
+      let allCodingProblems = [];
+      (data.roadmap || []).forEach(s => {
+        if (s.codingProblems && s.codingProblems.length > 0) {
+          s.codingProblems.forEach(cp => {
+            allCodingProblems.push({ ...cp, stageName: s.stageName });
+          });
+        }
+      });
+
+      document.getElementById('leetcodeCountBadge').innerText = allCodingProblems.length;
+      document.getElementById('leetcodeCountText').innerText = `${allCodingProblems.length} practice questions retrieved`;
+
+      const leetcodeGrid = document.getElementById('leetcodeGrid');
+      if (allCodingProblems.length > 0) {
+        leetcodeGrid.innerHTML = allCodingProblems.map(cp => {
+          let badgeStyle = "bg-emerald-100 text-emerald-800 border-emerald-200";
+          if ((cp.difficulty || "").toLowerCase() === "medium") badgeStyle = "bg-amber-100 text-amber-800 border-amber-200";
+          if ((cp.difficulty || "").toLowerCase() === "hard") badgeStyle = "bg-rose-100 text-rose-800 border-rose-200";
+          return `
+            <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 flex flex-col justify-between hover:border-emerald-300 transition">
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-0.5 rounded border text-[10px] font-bold uppercase ${badgeStyle}">${cp.difficulty}</span>
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">${cp.stageName || 'Practice'}</span>
+                </div>
+                <h4 class="font-bold text-slate-900 text-sm">${cp.title}</h4>
+                <span class="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px] font-medium">${cp.topic || 'Algorithms'}</span>
+                ${cp.description ? `<p class="text-xs text-slate-600 line-clamp-2 mt-1 leading-snug">${cp.description}</p>` : ''}
+              </div>
+              <a href="${cp.url}" target="_blank" class="w-full py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition flex items-center justify-center gap-1 mt-2">
+                <span>Solve Problem on LeetCode ↗</span>
+              </a>
+            </div>
+          `;
+        }).join('');
+      } else {
+        leetcodeGrid.innerHTML = `
+          <div class="sm:col-span-2 p-8 text-center bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+            <p class="text-sm font-bold text-slate-700">No specific coding problems generated for this track.</p>
+            <p class="text-xs text-slate-500">LeetCode problems are attached to stages based on target role prerequisites.</p>
+          </div>
+        `;
+      }
+
       // Render 6-Stage Roadmap
       renderRoadmapStages(data.roadmap || []);
 
@@ -595,6 +658,7 @@
       const stages = window.activeStages || [];
       if (!stages[idx]) return;
       const s = stages[idx];
+      const allVideos = (currentData && (currentData.discoveredVideos || currentData.video_results)) || [];
 
       stages.forEach((_, i) => {
         const btn = document.getElementById(`stage-btn-${i}`);
@@ -608,23 +672,100 @@
         }
       });
 
+      // Filter YouTube videos for this stage
+      let stageVideos = allVideos.slice(idx * 2, (idx + 1) * 2);
+      if (stageVideos.length === 0) {
+        stageVideos = allVideos.slice(0, 2);
+      }
+
+      // Coding problems for this stage
+      const codingProbs = s.codingProblems || [];
+
+      // Project brief for this stage
+      const stageProject = (s.projects && s.projects[0]) || null;
+
       const card = document.getElementById('stageDetailCard');
       card.innerHTML = `
-        <div class="border-b border-slate-100 pb-4">
-          <span class="text-xs font-bold text-indigo-600 tracking-wider uppercase">Stage ${s.stageNumber || idx+1} Focus</span>
-          <h3 class="text-2xl font-bold text-slate-900 mt-0.5">${s.stageName}</h3>
-          <p class="text-sm text-slate-600 mt-1">${s.description}</p>
+        <!-- Stage Header -->
+        <div class="border-b border-slate-100 pb-4 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-indigo-600 tracking-wider uppercase">STAGE ${s.stageNumber || idx+1} FOCUS</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700">Prereqs: ${(s.prerequisitesRequired || ['None']).join(', ')}</span>
+          </div>
+          <h3 class="text-2xl font-extrabold text-slate-900">${s.stageName}</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">${s.description}</p>
         </div>
 
-        <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Key Focus Topics</h4>
+        <!-- 1. Focus Topics -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+            <span>📌 Key Focus Topics</span>
+          </h4>
           <div class="flex flex-wrap gap-2">
-            ${(s.focusTopics || []).map(t => `<span class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold">${t}</span>`).join('')}
+            ${(s.focusTopics || []).map(t => `<span class="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-semibold">${t}</span>`).join('')}
           </div>
         </div>
 
-        <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Recommended Resources</h4>
+        <!-- 2. Beginner YouTube Videos for this Stage -->
+        ${stageVideos.length > 0 ? `
+          <div class="space-y-3 pt-2">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <span>▶️ Beginners YouTube Video Tutorials (Stage ${idx+1})</span>
+            </h4>
+            <div class="grid sm:grid-cols-2 gap-4">
+              ${stageVideos.map(v => `
+                <div class="p-3 rounded-2xl border border-slate-200 bg-white space-y-2 flex gap-3 items-start shadow-sm">
+                  <div class="w-24 h-16 rounded-xl bg-slate-900 overflow-hidden shrink-0 relative">
+                    <img src="${v.thumbnailUrl || 'https://img.youtube.com/vi/' + v.videoId + '/hqdefault.jpg'}" class="w-full h-full object-cover">
+                    <a href="${v.url}" target="_blank" class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/0">
+                      <div class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center text-xs">▶</div>
+                    </a>
+                  </div>
+                  <div class="space-y-1 overflow-hidden">
+                    <span class="text-[10px] font-bold text-indigo-600 block truncate">${v.channelName || 'YouTube Tutorial'}</span>
+                    <h5 class="text-xs font-bold text-slate-900 line-clamp-2 leading-tight">${v.title}</h5>
+                    <a href="${v.url}" target="_blank" class="text-[11px] font-bold text-red-600 hover:underline inline-block pt-0.5">Watch on YouTube ↗</a>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- 3. LeetCode / Coding Practice Questions -->
+        ${codingProbs.length > 0 ? `
+          <div class="space-y-3 pt-2">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <span>💻 LeetCode & Coding Practice Questions</span>
+            </h4>
+            <div class="grid sm:grid-cols-2 gap-3">
+              ${codingProbs.map(cp => {
+                let badgeStyle = "bg-emerald-100 text-emerald-800 border-emerald-200";
+                if ((cp.difficulty || "").toLowerCase() === "medium") badgeStyle = "bg-amber-100 text-amber-800 border-amber-200";
+                if ((cp.difficulty || "").toLowerCase() === "hard") badgeStyle = "bg-rose-100 text-rose-800 border-rose-200";
+                return `
+                  <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-2 flex flex-col justify-between">
+                    <div>
+                      <div class="flex items-center justify-between text-[11px] mb-1">
+                        <span class="px-2 py-0.5 rounded border text-[10px] font-bold uppercase ${badgeStyle}">${cp.difficulty}</span>
+                        <span class="text-slate-500 font-semibold">${cp.topic || 'Algorithms'}</span>
+                      </div>
+                      <h5 class="font-bold text-slate-900 text-xs">${cp.title}</h5>
+                      ${cp.description ? `<p class="text-xs text-slate-600 mt-1 line-clamp-2">${cp.description}</p>` : ''}
+                    </div>
+                    <a href="${cp.url}" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:underline pt-2">
+                      <span>Solve Problem on LeetCode ↗</span>
+                    </a>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- 4. Recommended Documentation & Course Resources -->
+        <div class="space-y-3 pt-2">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">📚 Curated Documentation & Courses</h4>
           <div class="grid sm:grid-cols-2 gap-3">
             ${(s.resources || []).map(r => `
               <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-2 flex flex-col justify-between">
@@ -643,11 +784,31 @@
             `).join('')}
           </div>
         </div>
+
+        <!-- 5. Stage Reinforcement Project Brief -->
+        ${stageProject ? `
+          <div class="space-y-3 pt-2">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">🛠️ Stage Reinforcement Project Brief</h4>
+            <div class="p-5 rounded-2xl border border-indigo-200 bg-indigo-50/40 space-y-3">
+              <div class="flex items-center justify-between">
+                <h5 class="font-extrabold text-slate-900 text-sm">${stageProject.title}</h5>
+                <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-bold uppercase">${stageProject.projectType || 'Project'}</span>
+              </div>
+              <p class="text-xs text-slate-700 leading-relaxed">${stageProject.problemStatement || ''}</p>
+              ${(stageProject.suggestedStack || []).length > 0 ? `
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                  <span class="text-[11px] font-bold text-slate-500 self-center">Stack:</span>
+                  ${stageProject.suggestedStack.map(st => `<span class="px-2 py-0.5 rounded bg-white border border-indigo-200 text-indigo-700 text-[11px] font-semibold">${st}</span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        ` : ''}
       `;
     }
 
     function switchTab(tabKey) {
-      const tabs = ['youtube', 'web', 'roadmap', 'capstone', 'opportunities'];
+      const tabs = ['youtube', 'web', 'roadmap', 'leetcode', 'capstone', 'opportunities'];
       tabs.forEach(t => {
         const content = document.getElementById(`tab-${t}`);
         const btn = document.getElementById(`tab-btn-${t}`);

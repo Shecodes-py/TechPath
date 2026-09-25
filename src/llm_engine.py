@@ -60,7 +60,8 @@ Return a valid JSON object with the following top-level keys:
     prerequisitesRequired (list),
     resources (list of objects: {title, url, resourceType, difficulty, estimatedHours, skillsTaught, prerequisites, summary, isFree}),
     assessments (list of objects: {id, stage, questionType, question, options, correctAnswerOrRubric, explanation}),
-    projects (list of objects: {id, title, stage, projectType, problemStatement, objectives, skillsTested, suggestedStack, deliverables, evaluationRubric})
+    projects (list of objects: {id, title, stage, projectType, problemStatement, objectives, skillsTested, suggestedStack, deliverables, evaluationRubric}),
+    codingProblems (list of objects: {title, difficulty, url, topic, description})
   )
 - capstone (object: {title, domainTarget, problemStatement, objectives, skillsTested, suggestedStack, deliverables, milestones, evaluationCriteria, extensionIdeas})
 - opportunities (array of objects: {title, organizer, opportunityType, deadline, eligibility, remoteStatus, requiredSkills, difficultyEstimate, applicationUrl, sourceUrl, matchReason})
@@ -79,8 +80,12 @@ RESOURCE RULES:
         api_key: Optional[str] = None,
         anthropic_key: Optional[str] = None,
         openai_key: Optional[str] = None,
+        groq_key: Optional[str] = None,
         provider: str = "auto",
     ):
+        self.groq_key = _usable_key(
+            groq_key or os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
+        )
         self.gemini_key = _usable_key(
             api_key or os.getenv("GEMINI_API_KEY") or os.getenv("LLM_API_KEY")
         )
@@ -106,7 +111,11 @@ RESOURCE RULES:
 
         for backend in backends:
             try:
-                if backend == "gemini":
+                if backend == "groq":
+                    logger.info("[LLM] Invoking Groq / Grok LLM model...")
+                    from src.llm_clients import call_groq
+                    raw = await call_groq(prompt, self.groq_key, system=self.SYSTEM_PROMPT)
+                elif backend == "gemini":
                     logger.info("[LLM] Invoking Google Gemini model...")
                     raw = await call_gemini_latest(self.SYSTEM_PROMPT + "\n\n" + prompt, self.gemini_key)
                 elif backend == "claude":
@@ -132,14 +141,16 @@ RESOURCE RULES:
     def _backends(self) -> list[str]:
         provider = self.provider
         ordered: list[str] = []
+        if provider in ("groq", "grok", "auto") and self.groq_key:
+            ordered.append("groq")
         if provider in ("gemini", "auto") and self.gemini_key:
             ordered.append("gemini")
         if provider in ("claude", "anthropic", "auto") and self.anthropic_key:
             ordered.append("claude")
         if provider in ("openai", "auto") and self.openai_key:
             ordered.append("openai")
-        if provider in ("claude", "anthropic", "openai") and self.gemini_key and "gemini" not in ordered:
-            ordered.append("gemini")
+        if provider in ("claude", "anthropic", "openai", "gemini") and self.groq_key and "groq" not in ordered:
+            ordered.append("groq")
         return ordered
 
     def _build_user_prompt(
@@ -987,6 +998,22 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
                             "deliverables": ["CLI codebase", "README"],
                             "evaluationRubric": ["Error handling", "Clean OOP structure"]
                         }
+                    ],
+                    "codingProblems": [
+                        {
+                            "title": "Two Sum",
+                            "difficulty": "Easy",
+                            "url": "https://leetcode.com/problems/two-sum/",
+                            "topic": "Arrays & Hash Maps",
+                            "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."
+                        },
+                        {
+                            "title": "Valid Anagram",
+                            "difficulty": "Easy",
+                            "url": "https://leetcode.com/problems/valid-anagram/",
+                            "topic": "Strings & Hashing",
+                            "description": "Given two strings s and t, return true if t is an anagram of s, and false otherwise."
+                        }
                     ]
                 },
                 {
@@ -1031,6 +1058,22 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
                             "suggestedStack": ["FastAPI", "PostgreSQL", "SQLAlchemy"],
                             "deliverables": ["API Codebase", "SQL Migration Scripts"],
                             "evaluationRubric": ["Clean CRUD endpoints", "SQL query safety"]
+                        }
+                    ],
+                    "codingProblems": [
+                        {
+                            "title": "Valid Parentheses",
+                            "difficulty": "Easy",
+                            "url": "https://leetcode.com/problems/valid-parentheses/",
+                            "topic": "Stacks & Parsing",
+                            "description": "Determine if an input string containing brackets '()[]{}' is valid."
+                        },
+                        {
+                            "title": "Design HashMap",
+                            "difficulty": "Easy",
+                            "url": "https://leetcode.com/problems/design-hashmap/",
+                            "topic": "Hash Tables & Data Structures",
+                            "description": "Design a HashMap without using built-in hash table libraries."
                         }
                     ]
                 },
@@ -1077,6 +1120,22 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
                             "deliverables": ["Microservice Repo", "Swagger API Docs"],
                             "evaluationRubric": ["Sub-100ms response time", "Secure auth logic"]
                         }
+                    ],
+                    "codingProblems": [
+                        {
+                            "title": "Group Anagrams",
+                            "difficulty": "Medium",
+                            "url": "https://leetcode.com/problems/group-anagrams/",
+                            "topic": "Hash Maps & Sorting",
+                            "description": "Group an array of strings into sub-lists of anagrams efficiently."
+                        },
+                        {
+                            "title": "LRU Cache",
+                            "difficulty": "Medium",
+                            "url": "https://leetcode.com/problems/lru-cache/",
+                            "topic": "Hash Map & Linked List",
+                            "description": "Design a Least Recently Used (LRU) cache with O(1) time complexity."
+                        }
                     ]
                 },
                 {
@@ -1121,6 +1180,22 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
                             "suggestedStack": ["Docker", "GitHub Actions", "Render / AWS"],
                             "deliverables": ["Dockerfile", "docker-compose.yml", "Live App URL"],
                             "evaluationRubric": ["Automated test pass on push", "Zero-downtime deploy"]
+                        }
+                    ],
+                    "codingProblems": [
+                        {
+                            "title": "Design Hit Counter / Rate Limiter",
+                            "difficulty": "Medium",
+                            "url": "https://leetcode.com/problems/design-hit-counter/",
+                            "topic": "System Design & Sliding Window",
+                            "description": "Design a system that tracks the number of requests received in the past 5 minutes."
+                        },
+                        {
+                            "title": "Web Crawler Multithreaded",
+                            "difficulty": "Medium",
+                            "url": "https://leetcode.com/problems/web-crawler-multithreaded/",
+                            "topic": "Async Concurrency",
+                            "description": "Implement a multithreaded web crawler to fetch URLs concurrently."
                         }
                     ]
                 },
@@ -1167,6 +1242,15 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
                             "deliverables": ["Published Apify Actor Link", "Public GitHub Repo"],
                             "evaluationRubric": ["Clean input/output schema", "Published on Store"]
                         }
+                    ],
+                    "codingProblems": [
+                        {
+                            "title": "Task Scheduler",
+                            "difficulty": "Medium",
+                            "url": "https://leetcode.com/problems/task-scheduler/",
+                            "topic": "Priority Queue & CPU Scheduling",
+                            "description": "Find the minimum CPU clock cycles required to execute tasks with mandatory cooling intervals."
+                        }
                     ]
                 },
                 {
@@ -1211,6 +1295,15 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
                             "suggestedStack": ["Kafka", "Python/Go", "PostgreSQL", "Prometheus"],
                             "deliverables": ["Multi-repo architecture", "System benchmark report"],
                             "evaluationRubric": ["Fault tolerance under load", "Clean event schemas"]
+                        }
+                    ],
+                    "codingProblems": [
+                        {
+                            "title": "Serialize and Deserialize Binary Tree",
+                            "difficulty": "Hard",
+                            "url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+                            "topic": "Tree & Protocol Buffers",
+                            "description": "Design an algorithm to serialize a data structure into a string and back."
                         }
                     ]
                 }

@@ -66,6 +66,8 @@ class TechPathOrchestrator:
     ) -> TechPathOutput | None:
         try:
             sources = raw_output.get("sources") or []
+            vids = web_context.get("video_results", [])
+            search_hits = web_context.get("search_results", [])
             return TechPathOutput(
                 profile=self.input.public_profile(),
                 targetRole=raw_output.get("targetRole", self.input.goal),
@@ -77,6 +79,8 @@ class TechPathOrchestrator:
                 capstone=raw_output.get("capstone", {}),
                 opportunities=raw_output.get("opportunities", []),
                 sources=sources or _source_urls(raw_output, web_context),
+                discoveredVideos=vids,
+                discoveredSearchResults=search_hits,
                 generatedAt=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             )
         except Exception as e:

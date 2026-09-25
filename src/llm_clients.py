@@ -1,5 +1,5 @@
 """
-Drop-in LLM callers for TechPath supporting Google Gemini, Anthropic Claude, and OpenAI GPT.
+Drop-in LLM callers for TechPath supporting Groq / Grok, Google Gemini, Anthropic Claude, and OpenAI.
 All functions return raw response text; parse with parse_llm_json().
 Includes 3-attempt retry loops with exponential backoff for transient 503/429 errors.
 """
@@ -15,9 +15,54 @@ import httpx
 
 logger = logging.getLogger("TechPath.LLMClients")
 
+GROQ_MODELS = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-70b-versatile",
+    "llama3-70b-8192",
+    "llama-3.1-8b-instant",
+    "mixtral-8x7b-32768",
+]
 GEMINI_MODELS = ["gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-1.5-pro"]
 CLAUDE_MODEL = "claude-3-5-sonnet-20241022"
 OPENAI_MODEL = "gpt-4o-mini"
+
+
+async def call_groq(prompt: str, api_key: str, system: Optional[str] = None) -> str:
+    """Call Groq / Grok API endpoint with multi-model fallback."""
+    logger.info(f"[LLM] Request started. Provider: Groq/Grok | Available Models: {GROQ_MODELS}")
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": prompt})
+
+    async with httpx.AsyncClient(timeout=90.0) as client:
+        for model in GROQ_MODELS:
+            payload = {
+                "model": model,
+                "messages": messages,
+                "temperature": 0.2,
+                "response_format": {"type": "json_object"},
+            }
+            for attempt in range(1, 4):
+                try:
+                    logger.info(f"[LLM] Invoking Groq model '{model}' (attempt {attempt}/3)...")
+                    response = await client.post(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                        json=payload,
+                    )
+                    if response.status_code != 200:
+                        logger.warning(f"[LLM] Groq API model '{model}' HTTP {response.status_code}: {response.text[:200]}")
+                    response.raise_for_status()
+                    data = response.json()
+                    text = data["choices"][0]["message"]["content"]
+                    logger.info(f"[LLM] Groq model '{model}' response received successfully ({len(text)} chars).")
+                    return text
+                except Exception as exc:
+                    logger.warning(f"[LLM] Groq model '{model}' (attempt {attempt}/3) failed: {exc}")
+                    if attempt < 3:
+                        await asyncio.sleep(1.5 * attempt)
+    raise RuntimeError("All Groq API attempts failed across available models.")
 
 
 async def call_claude(prompt: str, api_key: str, system: Optional[str] = None) -> str:

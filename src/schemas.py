@@ -168,6 +168,15 @@ class OpportunityMatch(BaseModel):
     matchReason: str
 
 
+class CodingProblem(BaseModel):
+    """LeetCode or technical practice problem question."""
+    title: str
+    difficulty: str  # Easy, Medium, Hard
+    url: str
+    topic: str
+    description: Optional[str] = None
+
+
 class RoadmapStage(BaseModel):
     """A stage in the dependency-aware learning graph."""
     stageNumber: int
@@ -178,6 +187,7 @@ class RoadmapStage(BaseModel):
     resources: List[ResourceItem]
     assessments: List[AssessmentQuestion]
     projects: List[ProjectBrief]
+    codingProblems: Optional[List[CodingProblem]] = Field(default_factory=list)
 
 
 class TechPathOutput(BaseModel):
@@ -190,4 +200,6 @@ class TechPathOutput(BaseModel):
     capstone: CapstoneBrief
     opportunities: List[OpportunityMatch]
     sources: List[str]
+    discoveredVideos: Optional[List[dict]] = Field(default_factory=list)
+    discoveredSearchResults: Optional[List[dict]] = Field(default_factory=list)
     generatedAt: str
