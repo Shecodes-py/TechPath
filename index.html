@@ -545,7 +545,7 @@
       if (token) {
         document.getElementById('loadingMessage').innerText = "Connecting to Apify Actor REST API with your token...";
         try {
-          const res = await fetch(`https://api.apify.com/v2/acts/3cGQUsrX8W99r2eMD/runs-sync-get-dataset-items?token=${token}`, {
+          const res = await fetch(`https://api.apify.com/v2/acts/successful_yearning~techpath-learning-intelligence/runs-sync-get-dataset-items?token=${token}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
