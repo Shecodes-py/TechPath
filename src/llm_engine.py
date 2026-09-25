@@ -166,42 +166,42 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
         location = learner.location or "Nigeria"
 
         # Check domain category
-        is_creator = any(k in goal_lower for k in ["content", "creator", "video", "media", "marketing", "film", "youtube", "design"])
+        is_cloud = any(k in goal_lower for k in ["cloud", "devops", "kubernetes", "aws", "infrastructure", "sre", "sysadmin"])
         is_software = any(k in goal_lower for k in ["software", "backend", "frontend", "fullstack", "web", "developer"])
         
-        if is_creator:
-            return self._build_content_creator_path(learner, niche, location)
+        if is_cloud:
+            return self._build_cloud_devops_path(learner, niche, location)
         elif is_software:
             return self._build_software_engineer_path(learner, niche, location)
         else:
             return self._build_machine_learning_path(learner, niche, location)
 
-    def _build_content_creator_path(self, learner: LearnerInput, niche: str, location: str) -> Dict[str, Any]:
+    def _build_cloud_devops_path(self, learner: LearnerInput, niche: str, location: str) -> Dict[str, Any]:
         goal = learner.goal
         return {
             "targetRole": goal,
-            "summaryPitch": f"Tailored {goal} roadmap for a {learner.currentLevel} in {location} focusing on {niche}. Structured from storytelling & video editing foundations to advanced audience scaling & monetization.",
+            "summaryPitch": f"Tailored {goal} roadmap for a {learner.currentLevel} in {location} focusing on {niche}. Designed with strict prerequisite ordering (Linux & Networking Foundations → Containerization → Cloud Infra → CI/CD & Orchestration → Observability → SRE).",
             "skillGaps": [
                 {
-                    "skill": "Storytelling & Scriptwriting Fundamentals",
+                    "skill": "Linux Systems Administration & Networking",
                     "category": "Foundation",
-                    "isRequiredFor": "Engaging Video Structure & Retention",
+                    "isRequiredFor": "Server Administration, Bash Scripting & Cloud Networking",
                     "confidence": 0.95,
-                    "explanation": "Essential foundation for planning videos, framing hooks, and keeping audiences engaged."
+                    "explanation": "Essential prerequisite before containerization, VPC networking, and Kubernetes orchestration."
                 },
                 {
-                    "skill": "Video Editing & Post-Production",
+                    "skill": "Docker Containerization",
                     "category": "Core",
-                    "isRequiredFor": "Professional Cuts, Audio Clean-up & Color Grading",
-                    "confidence": 0.90,
-                    "explanation": "Prerequisite for creating high-quality visual content using industry NLE software."
+                    "isRequiredFor": "Packaging Applications & Microservices Architecture",
+                    "confidence": 0.92,
+                    "explanation": "Critical prerequisite before cluster management with Kubernetes and Helm."
                 },
                 {
-                    "skill": "Audience Analytics & Distribution Strategy",
+                    "skill": "Infrastructure as Code (Terraform)",
                     "category": "Specialization",
-                    "isRequiredFor": "Channel Growth, SEO & Monetization",
-                    "confidence": 0.85,
-                    "explanation": "Critical for optimizing thumbnails, titles, CTR, and audience retention metrics."
+                    "isRequiredFor": "Automated Cloud Provisioning & VPC Management",
+                    "confidence": 0.88,
+                    "explanation": "Required for reproducible cloud infrastructure management across AWS, Azure, or GCP."
                 }
             ],
             "roadmap": [
@@ -524,50 +524,38 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
             },
             "opportunities": [
                 {
-                    "title": "Apify × She Code Africa Digital Content Challenge 2026",
-                    "organizer": "Apify & She Code Africa",
+                    "title": "Cloud Native Computing Foundation (CNCF) Community Challenge",
+                    "organizer": "CNCF Foundation",
                     "opportunityType": "hackathon",
-                    "deadline": "2026-10-15",
-                    "eligibility": "Open to creators, storytellers, and tech learners across Africa",
+                    "deadline": "2026-11-15",
+                    "eligibility": "Open to cloud developers & DevOps engineers globally",
                     "remoteStatus": "Remote",
-                    "requiredSkills": ["Content Creation", "Videography", "Storytelling", "Digital Media"],
-                    "difficultyEstimate": "Beginner to Intermediate friendly",
-                    "applicationUrl": "https://apify.com/hackathons",
-                    "sourceUrl": "https://apify.com/",
-                    "matchReason": f"Directly aligns with your goal ({goal}). Offers mentorship, cash prizes, and platform exposure."
+                    "requiredSkills": ["Kubernetes", "Docker", "Cloud Native", "DevOps"],
+                    "difficultyEstimate": "Intermediate",
+                    "applicationUrl": "https://cncf.io/",
+                    "sourceUrl": "https://cncf.io/",
+                    "matchReason": f"Directly aligns with your target role ({goal}) and cloud engineering goals."
                 },
                 {
-                    "title": "YouTube Creator Growth & Grant Program",
-                    "organizer": "YouTube Creators Initiative",
+                    "title": "AWS Community Builders & Hackathon",
+                    "organizer": "Amazon Web Services",
                     "opportunityType": "competition",
-                    "deadline": "2026-11-01",
-                    "eligibility": "Emerging creators in Africa",
-                    "remoteStatus": "Remote",
-                    "requiredSkills": ["Video Production", "Channel Management"],
-                    "difficultyEstimate": "Intermediate",
-                    "applicationUrl": "https://youtube.com/creators",
-                    "sourceUrl": "https://youtube.com/",
-                    "matchReason": f"Perfect match for scaling your channel and video production skills in {niche}."
-                },
-                {
-                    "title": "African Tech Media & Storytelling Fellowship",
-                    "organizer": "She Code Africa",
-                    "opportunityType": "internship",
                     "deadline": "2026-12-01",
-                    "eligibility": "Early-career content creators & digital media producers",
+                    "eligibility": "Cloud architects and builders",
                     "remoteStatus": "Remote",
-                    "requiredSkills": ["Videography", "Editing", "Social Media"],
-                    "difficultyEstimate": "Intermediate",
-                    "applicationUrl": "https://shecodeafrica.org/",
-                    "sourceUrl": "https://shecodeafrica.org/",
-                    "matchReason": "Provides mentorship and production resources for technical content creators."
+                    "requiredSkills": ["AWS", "Terraform", "Cloud Architecture"],
+                    "difficultyEstimate": "Intermediate to Advanced",
+                    "applicationUrl": "https://aws.amazon.com/developer/community/builders/",
+                    "sourceUrl": "https://aws.amazon.com/",
+                    "matchReason": f"Great opportunity to build AWS cloud solutions and network with cloud engineers."
                 }
             ],
             "sources": [
-                "https://creatoracademy.youtube.com/",
-                "https://www.blackmagicdesign.com/products/davinciresolve/training",
-                "https://fastapi.tiangolo.com/",
-                "https://apify.com/store"
+                "https://linuxjourney.com/",
+                "https://docs.docker.com/",
+                "https://developer.hashicorp.com/terraform",
+                "https://kubernetes.io/docs/",
+                "https://prometheus.io/docs/"
             ]
         }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechPath — AI-Powered Skill Roadmaps & Learning Intelligence</title>
+  <title>TechPath — Technical Skill Roadmaps & Learning Intelligence</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,20 +41,20 @@
     <section class="text-center space-y-4 max-w-3xl mx-auto">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-sm">
         <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
-        Apify Hackathon Edition • AI Learning Engine
+        Apify Hackathon Edition • Technical Learning Engine
       </div>
       <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-        Your Custom Skill Roadmap Built in Seconds
+        Your Custom Tech Roadmap Built in Seconds
       </h1>
       <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
-        Tell us your career goal, current background, and weekly availability. TechPath scans live learning resources, detects your prerequisite skill gaps, and generates a structured stage-by-stage path.
+        Tell us your technical career goal, current background, and weekly availability. TechPath scans live learning resources, detects your prerequisite skill gaps, and generates a structured stage-by-stage engineering path.
       </p>
     </section>
 
     <!-- Generator Input Form Card -->
     <section class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xl shadow-slate-200/50 space-y-8">
       <div class="border-b border-slate-100 pb-5">
-        <h2 class="text-xl font-bold text-slate-900">Define Your Learning Profile</h2>
+        <h2 class="text-xl font-bold text-slate-900">Define Your Technical Profile</h2>
         <p class="text-sm text-slate-500 mt-1">Fill out the parameters below to generate a tailored development plan.</p>
       </div>
 
@@ -63,9 +63,9 @@
 
           <!-- Target Role -->
           <div class="space-y-2">
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Target Role / Career Goal</label>
-            <input type="text" id="targetRole" required placeholder="e.g. Content Creator, Machine Learning Engineer, Full-Stack Dev" 
-              value="Content Creator"
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Target Tech Role</label>
+            <input type="text" id="targetRole" required placeholder="e.g. Full-Stack Developer, Machine Learning Engineer, Cloud Architect" 
+              value="Full-Stack Developer"
               class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
           </div>
 
@@ -73,8 +73,8 @@
           <div class="space-y-2">
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Current Skill Level</label>
             <select id="currentLevel" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-              <option value="Beginner" selected>Beginner (Starting fresh / basic exposure)</option>
-              <option value="Intermediate">Intermediate (Hands-on experience)</option>
+              <option value="Beginner" selected>Beginner (Starting fresh / basic coding)</option>
+              <option value="Intermediate">Intermediate (Hands-on dev experience)</option>
               <option value="Advanced">Advanced (Seeking specialization / mastery)</option>
             </select>
           </div>
@@ -82,7 +82,7 @@
           <!-- Weekly Hours -->
           <div class="space-y-2">
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Weekly Commitment (Hours)</label>
-            <input type="number" id="hoursPerWeek" min="1" max="60" value="8" required
+            <input type="number" id="hoursPerWeek" min="1" max="60" value="10" required
               class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
           </div>
 
@@ -95,15 +95,15 @@
 
           <!-- Domain Focus / Interest -->
           <div class="space-y-2 sm:col-span-2">
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Domain Focus / Specific Interest</label>
-            <input type="text" id="domainInterest" placeholder="e.g. Videography, Healthcare AI, Mobile Apps, Cloud Security" value="videography & storytelling"
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Technical Focus / Domain</label>
+            <input type="text" id="domainInterest" placeholder="e.g. Web Development, Healthcare AI, Cloud Infrastructure, FinTech" value="Web & Cloud Development"
               class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
           </div>
 
           <!-- Known Skills -->
           <div class="space-y-2 sm:col-span-2">
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Skills You Already Know (Comma separated)</label>
-            <input type="text" id="knownSkills" placeholder="e.g. Python basics, CapCut, HTML/CSS, Git" value="Basic smartphone filming, CapCut"
+            <input type="text" id="knownSkills" placeholder="e.g. Python basics, HTML/CSS, Git, SQL" value="HTML/CSS, Python basics"
               class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
           </div>
 
@@ -123,23 +123,23 @@
 
         </div>
 
-        <!-- Quick Demo Profiles Bar -->
+        <!-- Quick Demo Tech Presets Bar -->
         <div class="flex flex-wrap items-center gap-2 pt-2 text-xs">
-          <span class="text-slate-500 font-medium">Quick Presets:</span>
-          <button type="button" onclick="loadPreset('creator')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-semibold border border-slate-200 transition">
-            🎥 Content Creator (Nigeria)
+          <span class="text-slate-500 font-medium">Quick Tech Tracks:</span>
+          <button type="button" onclick="loadPreset('swe')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-semibold border border-slate-200 transition">
+            💻 Full-Stack Software Engineer
           </button>
           <button type="button" onclick="loadPreset('ml')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-semibold border border-slate-200 transition">
-            🤖 ML Engineer (Healthcare)
+            🤖 Machine Learning Engineer
           </button>
-          <button type="button" onclick="loadPreset('swe')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-semibold border border-slate-200 transition">
-            💻 Software Engineer (Full Stack)
+          <button type="button" onclick="loadPreset('devops')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-semibold border border-slate-200 transition">
+            ☁️ Cloud & DevOps Engineer
           </button>
         </div>
 
         <div class="pt-4 border-t border-slate-100">
           <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2">
-            <span>Generate My Learning Roadmap</span>
+            <span>Generate My Tech Roadmap</span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </button>
         </div>
@@ -149,8 +149,8 @@
     <!-- Loading State Indicator -->
     <div id="loadingState" class="hidden bg-white border border-slate-200 rounded-3xl p-10 text-center space-y-4 shadow-sm">
       <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-      <h3 class="text-lg font-bold text-slate-900">TechPath Engine is Analyzing Your Profile...</h3>
-      <p class="text-sm text-slate-500 max-w-md mx-auto" id="loadingMessage">Evaluating prerequisite rules, querying live search scrapers, and structuring your 6-stage roadmap.</p>
+      <h3 class="text-lg font-bold text-slate-900">TechPath Engine is Analyzing Your Technical Profile...</h3>
+      <p class="text-sm text-slate-500 max-w-md mx-auto" id="loadingMessage">Evaluating prerequisite rules, querying live technical search scrapers, and structuring your 6-stage engineering path.</p>
     </div>
 
     <!-- Output Roadmap Dashboard -->
@@ -162,13 +162,13 @@
           <div class="space-y-2">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              Roadmap Ready
+              Tech Roadmap Active
             </div>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight" id="resRoleTitle">
-              Target Role: <span class="text-indigo-600" id="resRoleName">Content Creator</span>
+              Target Role: <span class="text-indigo-600" id="resRoleName">Full-Stack Developer</span>
             </h2>
             <p class="text-sm text-slate-600 max-w-2xl" id="resPitchSummary">
-              Tailored 6-stage development path focusing on videography & storytelling. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).
+              Tailored 6-stage software engineering path focusing on Web & Cloud Development. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).
             </p>
           </div>
 
@@ -183,11 +183,11 @@
             </div>
             <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
               <span class="block text-slate-500">Weekly Study</span>
-              <strong class="text-sm font-bold text-indigo-600" id="resHours">8 Hours/Wk</strong>
+              <strong class="text-sm font-bold text-indigo-600" id="resHours">10 Hours/Wk</strong>
             </div>
             <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
               <span class="block text-slate-500">Domain</span>
-              <strong class="text-sm font-bold text-emerald-600" id="resDomain">Videography</strong>
+              <strong class="text-sm font-bold text-emerald-600" id="resDomain">Web & Cloud</strong>
             </div>
           </div>
         </div>
@@ -196,8 +196,8 @@
         <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
           <span class="text-slate-500 font-medium">Known Skills:</span>
           <div id="resSkillsTags" class="flex flex-wrap gap-1.5">
-            <span class="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">Basic smartphone filming</span>
-            <span class="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">CapCut</span>
+            <span class="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">HTML/CSS</span>
+            <span class="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">Python basics</span>
           </div>
         </div>
       </div>
@@ -209,9 +209,9 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
           </div>
           <div class="space-y-2 w-full">
-            <h3 class="font-bold text-amber-900 text-sm">Prerequisite Skill Gap Diagnostics</h3>
+            <h3 class="font-bold text-amber-900 text-sm">Prerequisite Technical Skill Diagnostics</h3>
             <p class="text-xs text-amber-800">
-              Before jumping into advanced production or monetization, TechPath identified key prerequisite gaps you must master:
+              Before jumping into advanced frameworks or cloud deployment, TechPath identified key prerequisite gaps you must master:
             </p>
             <div class="grid sm:grid-cols-2 gap-3 pt-1" id="resGapContainer">
               <!-- Dynamically populated gaps -->
@@ -223,16 +223,16 @@
       <!-- Navigation Tabs -->
       <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-2 text-sm font-semibold">
         <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="px-4 py-2.5 rounded-xl bg-indigo-600 text-white shadow-sm transition">
-          🗺️ 6-Stage Roadmap
+          🗺️ 6-Stage Tech Roadmap
         </button>
         <button onclick="switchTab('assessment')" id="tab-btn-assessment" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
-          📝 Skill Quizzes
+          📝 Technical Skill Checks
         </button>
         <button onclick="switchTab('capstone')" id="tab-btn-capstone" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
-          🏆 Portfolio Capstone
+          🏆 Portfolio Capstone Brief
         </button>
         <button onclick="switchTab('opportunities')" id="tab-btn-opportunities" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
-          🎯 Hackathons & Grants
+          🎯 Hackathons & Developer Grants
         </button>
       </div>
 
@@ -251,9 +251,9 @@
       <!-- TAB 2: INTERACTIVE QUIZZES -->
       <div id="tab-assessment" class="hidden space-y-6">
         <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
-          <h3 class="text-lg font-bold text-slate-900">Stage Readiness Checks</h3>
+          <h3 class="text-lg font-bold text-slate-900">Technical Stage Readiness Checks</h3>
           <p class="text-xs text-slate-500">
-            Verify whether you've mastered this stage before moving forward. Try answering the check below:
+            Verify whether you've mastered this stage before moving forward. Try answering the technical prompt below:
           </p>
           <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50 space-y-4" id="quizContainer">
             <!-- Dynamically injected -->
@@ -267,8 +267,8 @@
           <div class="flex items-center gap-3">
             <div class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl font-bold text-xl">🏆</div>
             <div>
-              <h3 class="text-xl font-bold text-slate-900" id="capstoneTitle">Portfolio Capstone Brief</h3>
-              <p class="text-xs text-slate-500">A real-world project designed to prove your capabilities to employers and clients.</p>
+              <h3 class="text-xl font-bold text-slate-900" id="capstoneTitle">Engineering Portfolio Capstone Brief</h3>
+              <p class="text-xs text-slate-500">A production-grade software project designed to prove your capabilities to tech companies and clients.</p>
             </div>
           </div>
           <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4" id="capstoneDetails">
@@ -281,8 +281,8 @@
       <div id="tab-opportunities" class="hidden space-y-6">
         <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
           <div>
-            <h3 class="text-xl font-bold text-slate-900">Targeted Hackathons & Opportunities</h3>
-            <p class="text-xs text-slate-500 mt-1">Live challenges matched to your role and location.</p>
+            <h3 class="text-xl font-bold text-slate-900">Targeted Hackathons & Developer Grants</h3>
+            <p class="text-xs text-slate-500 mt-1">Live technical challenges matched to your role and location.</p>
           </div>
           <div class="grid sm:grid-cols-2 gap-4" id="opportunitiesGrid">
             <!-- Dynamically injected -->
@@ -305,79 +305,72 @@
     </div>
   </footer>
 
-  <!-- Interactive JavaScript Engine -->
+  <!-- Interactive Technical JavaScript Engine -->
   <script>
-    // Preset Data Repository
+    // Tech Presets Repository
     const presets = {
-      creator: {
-        role: "Content Creator",
+      swe: {
+        role: "Full-Stack Software Engineer",
         level: "Beginner",
-        hours: 8,
+        hours: 10,
         location: "Nigeria 🇳🇬",
-        domain: "Videography & Storytelling",
-        known: ["Basic smartphone filming", "CapCut"],
-        pitch: "Tailored Content Creator path for a Beginner in Nigeria focusing on videography. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
+        domain: "Web & Cloud Development",
+        known: ["HTML/CSS", "Python basics"],
+        pitch: "Tailored Software Engineering path for a Beginner focusing on Full-Stack web development. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
         gaps: [
-          { skill: "Lighting & Framing Fundamentals", type: "Foundation", req: "92%", desc: "Essential for producing crisp, professional visual content on smartphone or camera." },
-          { skill: "Audio Recording & Clean Editing", type: "Core", req: "88%", desc: "Good audio is 50% of video retention; critical before publishing." }
+          { skill: "JavaScript Modern Syntax (ES6+)", type: "Foundation", req: "94%", desc: "Must master async/await, closures, and DOM manipulation before React/Node." },
+          { skill: "Git & Version Control", type: "Core", req: "90%", desc: "Crucial for team collaboration and open-source contribution." }
         ],
         stages: [
           {
-            stage: 1, title: "Foundations", desc: "Master lighting, camera positioning, and raw audio capture before video editing.",
-            topics: ["Lighting Rules (3-Point)", "Smartphone Camera Settings", "Microphone Types & Placement", "Basic Scripting"],
-            resources: [
-              { title: "Smartphone Videography Crash Course", type: "YouTube", est: "2 hrs", desc: "Lighting and camera basics for mobile creators.", url: "https://www.youtube.com/results?search_query=smartphone+videography+beginner" },
-              { title: "Audio Recording for Beginners", type: "Course", est: "4 hrs", desc: "How to get clean sound on any budget.", url: "https://www.coursera.org" }
-            ],
-            project: "Shoot & Record a 60-second clean talking-head video with zero background noise."
+            stage: 1, title: "Foundations", desc: "JavaScript ES6+, DOM Manipulation, Async JS, and Git workflows.",
+            topics: ["JavaScript Variables & Scope", "Promises & Async/Await", "Git Branching & GitHub"],
+            resources: [{ title: "JavaScript30 by Wes Bos", type: "Course", est: "10 hrs", desc: "30 vanilla JS projects.", url: "https://javascript30.com" }],
+            project: "Build an interactive task manager web app using Vanilla JavaScript & LocalStorage."
           },
           {
-            stage: 2, title: "Core Skills", desc: "Build fast pacing, video editing cuts, color grading, and thumbnail design.",
-            topics: ["CapCut & Premiere Basics", "Pacing & B-Roll Timing", "Basic Color Correction", "Thumbnail Composition"],
-            resources: [
-              { title: "Complete Video Editing Masterclass", type: "YouTube", est: "5 hrs", desc: "Transitions, B-roll timing, and audio sync.", url: "https://www.youtube.com" }
-            ],
-            project: "Edit a 3-minute storytelling video incorporating B-roll overlays and sound effects."
+            stage: 2, title: "Core Frontend", desc: "React.js, Tailwind CSS, Component State, and REST API integration.",
+            topics: ["React Components & Props", "Hooks (useState, useEffect)", "Tailwind CSS Layouts"],
+            resources: [{ title: "React Official Documentation", type: "Doc", est: "8 hrs", desc: "Modern React with Hooks.", url: "https://react.dev" }],
+            project: "Build a responsive weather dashboard fetching live weather REST API data."
           },
           {
-            stage: 3, title: "Specialization", desc: "Focus on vertical short-form (Reels/TikTok) and YouTube long-form retention hooks.",
-            topics: ["Short-form Retention Hooks", "Storyboarding Narrative Arcs", "Custom Graphics & Lower Thirds"],
-            resources: [
-              { title: "Short Form Video Growth Guide", type: "Article", est: "1 hr", desc: "Pacing strategies for TikTok and Instagram Reels.", url: "https://medium.com" }
-            ],
-            project: "Produce 3 viral-style short videos with high-retention hooks."
+            stage: 3, title: "Core Backend", desc: "Node.js, Express, PostgreSQL / MongoDB, and REST API design.",
+            topics: ["Express.js Routing", "Database Schemas & ORMs", "JWT Authentication"],
+            resources: [{ title: "The Odin Project (Node.js Track)", type: "Course", est: "25 hrs", desc: "Complete full-stack curriculum.", url: "https://www.theodinproject.com" }],
+            project: "Create an authenticated REST API for a technical blog platform with database CRUD."
           },
           {
-            stage: 4, title: "Build & Deploy", desc: "Launch a multi-platform content workflow and release your core channel series.",
-            topics: ["Channel Branding", "SEO Metadata & Tags", "Publishing Schedule Strategy"],
-            resources: [{ title: "YouTube Channel Optimization Guide", type: "Doc", est: "2 hrs", desc: "SEO titles and thumbnail A/B testing.", url: "https://creatoracademy.youtube.com" }],
-            project: "Launch a 4-episode niche video series on YouTube/Instagram."
+            stage: 4, title: "Build & Deploy", desc: "Full-stack integration, Next.js / TypeScript, Vercel & Supabase deployment.",
+            topics: ["Next.js App Router", "TypeScript Interfaces", "Continuous Deployment (CI/CD)"],
+            resources: [{ title: "Next.js Learn Course", type: "Course", est: "6 hrs", desc: "Full-stack Next.js fundamentals.", url: "https://nextjs.org/learn" }],
+            project: "Deploy a full-stack SaaS starter product on Vercel with database & auth."
           },
           {
-            stage: 5, title: "Prove & Publish", desc: "Analyze audience metrics, viewer retention curves, and refine click-through rate.",
-            topics: ["YouTube Analytics Mastery", "Audience Retention Drop-off Fixes", "Community Engagement"],
-            resources: [{ title: "Decoding YouTube Analytics", type: "YouTube", est: "3 hrs", desc: "Understanding impressions and watch time.", url: "https://www.youtube.com" }],
-            project: "Publish a performance case study analyzing your top-performing content."
+            stage: 5, title: "Prove & Testing", desc: "Unit testing with Jest/Vitest, E2E testing with Playwright, and code reviews.",
+            topics: ["Jest Unit Tests", "Playwright E2E Tests", "System Architecture Design"],
+            resources: [{ title: "Testing JavaScript", type: "Course", est: "5 hrs", desc: "Comprehensive testing practices.", url: "https://testingjavascript.com" }],
+            project: "Add 80%+ test coverage to your full-stack app with Playwright E2E suites."
           },
           {
-            stage: 6, title: "Advance & Monetize", desc: "Brand deals, digital products, and scaling a creative agency.",
-            topics: ["Brand Sponsorship Pitching", "Digital Product Launch", "Outsourcing Video Editing"],
-            resources: [{ title: "Creator Business Strategy", type: "Course", est: "8 hrs", desc: "Monetization beyond ad revenue.", url: "https://www.skillshare.com" }],
-            project: "Pitch 3 potential brand sponsors with a media kit and portfolio link."
+            stage: 6, title: "Advance & Systems", desc: "Microservices, Docker, Redis caching, and WebSockets.",
+            topics: ["Dockerizing Node.js Apps", "Redis Caching Layer", "WebSocket Real-Time Messaging"],
+            resources: [{ title: "Docker for Web Developers", type: "Course", est: "4 hrs", desc: "Containers & Docker Compose.", url: "https://docker.com" }],
+            project: "Build a real-time collaborative chat system using WebSockets & Docker Compose."
           }
         ],
         quizzes: {
-          q: "What is the key rule for high video retention in short-form content?",
-          options: ["A 10-second intro logo", "A strong hook within the first 3 seconds", "Long silence at the start", "No B-roll"],
-          ans: 1
+          q: "Why use `async/await` over traditional `.then()` chain callbacks in JavaScript?",
+          options: ["It makes asynchronous code read synchronously, improving clarity & error handling", "It makes JavaScript run twice as fast", "It removes the need for functions", "It converts JS into Python"],
+          ans: 0
         },
         capstone: {
-          title: "Mini-Documentary & Channel Launch",
-          desc: "Produce, edit, and publish a 5-minute narrative mini-documentary with custom thumbnails, B-roll, clean audio, and SEO optimization."
+          title: "Full-Stack SaaS Platform with Payments & CI/CD",
+          desc: "Build and deploy a Next.js + TypeScript SaaS application with Supabase Auth, Stripe billing, and Vercel automated CI/CD."
         },
         opportunities: [
-          { name: "YouTube Creator Accelerator", desc: "Grants & mentorship for emerging creators.", url: "https://youtube.com" },
-          { name: "African Storytelling Grant", desc: "Funding for short-form filmmakers.", url: "https://google.com" }
+          { name: "Major League Hacking (MLH) Hackathon", desc: "Global developer hackathon series.", url: "https://mlh.io" },
+          { name: "Vercel Open Source Challenge", desc: "Build & deploy Next.js apps.", url: "https://vercel.com" }
         ]
       },
 
@@ -386,7 +379,7 @@
         level: "Beginner",
         hours: 8,
         location: "Nigeria 🇳🇬",
-        domain: "Healthcare AI",
+        domain: "Healthcare AI & Computer Vision",
         known: ["Python basics"],
         pitch: "Tailored ML roadmap for a Beginner in Nigeria focusing on Healthcare AI. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
         gaps: [
@@ -449,73 +442,73 @@
         ]
       },
 
-      swe: {
-        role: "Software Engineer",
+      devops: {
+        role: "Cloud & DevOps Engineer",
         level: "Beginner",
-        hours: 10,
+        hours: 12,
         location: "Global 🌍",
-        domain: "Full-Stack Web Development",
-        known: ["HTML/CSS"],
-        pitch: "Tailored Software Engineering path for a Beginner focusing on Full-Stack web development. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
+        domain: "Cloud Infrastructure & Kubernetes",
+        known: ["Linux basics", "Bash"],
+        pitch: "Tailored Cloud & DevOps path focusing on AWS, Kubernetes, Terraform, and CI/CD pipelines. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
         gaps: [
-          { skill: "JavaScript Modern Syntax (ES6+)", type: "Foundation", req: "94%", desc: "Must master async/await, closures, and DOM manipulation before React." },
-          { skill: "Git & Version Control", type: "Core", req: "90%", desc: "Crucial for team collaboration and code deployment." }
+          { skill: "Linux Systems Administration & Networking", type: "Foundation", req: "95%", desc: "Must master Bash scripting, systemd, SSH, and subnetting before Kubernetes." },
+          { skill: "Docker Containerization", type: "Core", req: "92%", desc: "Essential prerequisite before orchestration with Kubernetes." }
         ],
         stages: [
           {
-            stage: 1, title: "Foundations", desc: "JavaScript ES6+, DOM Manipulation, Async JS, and Git workflows.",
-            topics: ["JavaScript Variables & Scope", "Promises & Async/Await", "Git Branching & GitHub"],
-            resources: [{ title: "JavaScript30 by Wes Bos", type: "Course", est: "10 hrs", desc: "30 vanilla JS projects.", url: "https://javascript30.com" }],
-            project: "Build an interactive task manager web app using Vanilla JavaScript & LocalStorage."
+            stage: 1, title: "Foundations", desc: "Linux Admin, Networking Protocols (TCP/IP, DNS), and Shell Scripting.",
+            topics: ["Linux Commands & Permissions", "Bash Automation Scripts", "Networking & Subnetting"],
+            resources: [{ title: "Linux Command Line Basics", type: "Course", est: "8 hrs", desc: "Full Linux admin fundamentals.", url: "https://linuxjourney.com" }],
+            project: "Write a Bash script that automates server resource monitoring and sends alert logs."
           },
           {
-            stage: 2, title: "Core Frontend", desc: "React.js, Tailwind CSS, Component State, and REST API integration.",
-            topics: ["React Components & Props", "Hooks (useState, useEffect)", "Tailwind CSS Layouts"],
-            resources: [{ title: "React Official Documentation", type: "Doc", est: "8 hrs", desc: "Modern React with Hooks.", url: "https://react.dev" }],
-            project: "Build a responsive weather dashboard fetching live weather REST API data."
+            stage: 2, title: "Containerization", desc: "Docker, Docker Compose, Image Optimization, and Container Security.",
+            topics: ["Dockerfile Instructions", "Multi-stage Builds", "Docker Networks & Volumes"],
+            resources: [{ title: "Docker Deep Dive", type: "Course", est: "6 hrs", desc: "Container mechanics & security.", url: "https://docs.docker.com" }],
+            project: "Containerize a multi-service web app (Node.js + PostgreSQL + Redis) using Docker Compose."
           },
           {
-            stage: 3, title: "Core Backend", desc: "Node.js, Express, PostgreSQL / MongoDB, and REST API design.",
-            topics: ["Express.js Routing", "Database Schemas & ORMs", "JWT Authentication"],
-            resources: [{ title: "The Odin Project (Node.js Track)", type: "Course", est: "25 hrs", desc: "Complete full-stack curriculum.", url: "https://www.theodinproject.com" }],
-            project: "Create an authenticated REST API for a blog platform with database CRUD."
+            stage: 3, title: "Cloud Infrastructure", desc: "AWS Fundamentals (EC2, S3, VPC, IAM), and Infrastructure as Code (Terraform).",
+            topics: ["AWS Core Services", "IAM Security Policies", "Terraform State & Modules"],
+            resources: [{ title: "AWS Certified Solutions Architect Course", type: "Course", est: "15 hrs", desc: "Cloud architecture fundamentals.", url: "https://aws.amazon.com" }],
+            project: "Provision an automated AWS VPC, EC2 cluster, and S3 bucket using Terraform scripts."
           },
           {
-            stage: 4, title: "Build & Deploy", desc: "Full-stack integration, Next.js / TypeScript, Vercel & Supabase deployment.",
-            topics: ["Next.js App Router", "TypeScript Interfaces", "Continuous Deployment (CI/CD)"],
-            resources: [{ title: "Next.js Learn Course", type: "Course", est: "6 hrs", desc: "Full-stack Next.js fundamentals.", url: "https://nextjs.org/learn" }],
-            project: "Deploy a full-stack SaaS SaaS starter product on Vercel with database & auth."
+            stage: 4, title: "CI/CD & Orchestration", desc: "GitHub Actions pipelines, Kubernetes Architecture, Helm Charts, and ArgoCD.",
+            topics: ["GitHub Actions Workflows", "Kubernetes Pods & Deployments", "Helm Package Manager"],
+            resources: [{ title: "Kubernetes for Beginners", type: "Course", est: "10 hrs", desc: "K8s cluster management.", url: "https://kubernetes.io" }],
+            project: "Build a GitHub Actions CI/CD pipeline that automatically builds and deploys a web app to a K8s cluster."
           },
           {
-            stage: 5, title: "Prove & Testing", desc: "Unit testing with Jest/Vitest, E2E testing with Playwright, and code reviews.",
-            topics: ["Jest Unit Tests", "Playwright E2E Tests", "System Architecture Design"],
-            resources: [{ title: "Testing JavaScript", type: "Course", est: "5 hrs", desc: "Comprehensive testing practices.", url: "https://testingjavascript.com" }],
-            project: "Add 80%+ test coverage to your full-stack app with Playwright E2E suites."
+            stage: 5, title: "Monitoring & Observability", desc: "Prometheus metrics, Grafana dashboards, and ELK/Loki log aggregation.",
+            topics: ["Prometheus Metrics Scraping", "Grafana Dashboard Design", "Centralized Logging"],
+            resources: [{ title: "Prometheus & Grafana Masterclass", type: "Doc", est: "4 hrs", desc: "Observability best practices.", url: "https://prometheus.io" }],
+            project: "Set up Prometheus & Grafana to monitor Kubernetes cluster CPU, memory, and API latency."
           },
           {
-            stage: 6, title: "Advance & Systems", desc: "Microservices, Docker, Redis caching, and WebSockets.",
-            topics: ["Dockerizing Node.js Apps", "Redis Caching Layer", "WebSocket Real-Time Messaging"],
-            resources: [{ title: "Docker for Web Developers", type: "Course", est: "4 hrs", desc: "Containers & Docker Compose.", url: "https://docker.com" }],
-            project: "Build a real-time collaborative chat system using WebSockets & Docker Compose."
+            stage: 6, title: "Advance & Site Reliability", desc: "GitOps workflows, Service Mesh (Istio), Chaos Engineering, and Cost Optimization.",
+            topics: ["GitOps with ArgoCD", "Istio Traffic Management", "Cloud Cost Optimization"],
+            resources: [{ title: "Site Reliability Engineering (SRE) Handbook", type: "Book", est: "12 hrs", desc: "Google SRE principles.", url: "https://sre.google" }],
+            project: "Implement a GitOps deployment pipeline using ArgoCD with canary rollouts and Istio service mesh."
           }
         ],
         quizzes: {
-          q: "Why use `async/await` over traditional `.then()` chain callbacks in JavaScript?",
-          options: ["It makes asynchronous code read synchronously, improving clarity & error handling", "It makes JavaScript run twice as fast", "It removes the need for functions", "It converts JS into Python"],
+          q: "What is the primary benefit of Infrastructure as Code (IaC) with tools like Terraform?",
+          options: ["Infrastructure version control, reproducibility, and automated provisioning", "It replaces the need for cloud providers", "It makes servers run 10x faster", "It converts containers into virtual machines"],
           ans: 0
         },
         capstone: {
-          title: "Full-Stack SaaS Platform with Payments & CI/CD",
-          desc: "Build and deploy a Next.js + TypeScript SaaS application with Supabase Auth, Stripe billing, and Vercel automated CI/CD."
+          title: "Production Kubernetes GitOps & Observability Cluster",
+          desc: "Provision an automated cloud Kubernetes cluster with Terraform, configure GitHub Actions CI/CD, deploy ArgoCD for GitOps, and set up Prometheus/Grafana monitoring."
         },
         opportunities: [
-          { name: "Major League Hacking (MLH) Hackathon", desc: "Global developer hackathon series.", url: "https://mlh.io" },
-          { name: "Vercel Open Source Challenge", desc: "Build & deploy Next.js apps.", url: "https://vercel.com" }
+          { name: "Cloud Native Computing Foundation (CNCF) Grants", desc: "Kubernetes & Cloud Native community grants.", url: "https://cncf.io" },
+          { name: "AWS Community Hackathon", desc: "Build & deploy cloud architectures on AWS.", url: "https://aws.amazon.com" }
         ]
       }
     };
 
-    let activeData = presets.creator;
+    let activeData = presets.swe;
     let currentStageIndex = 0;
 
     function loadPreset(key) {
@@ -567,16 +560,15 @@
           if (res.ok) {
             const data = await res.json();
             if (data && data.length > 0) {
-              // Format custom run dataset item
               const item = data[0];
               activeData = {
                 role: item.targetRole || role,
                 level: item.profile?.currentLevel || level,
                 hours: item.profile?.hoursPerWeek || hours,
                 location: item.profile?.location || loc,
-                domain: domain || "General",
+                domain: domain || "Technical Domain",
                 known: item.profile?.knownSkills || known,
-                pitch: item.summaryPitch || "Tailored skill path.",
+                pitch: item.summaryPitch || "Tailored engineering path.",
                 gaps: (item.skillGaps || []).map(g => ({ skill: g.skill, type: g.category, req: `${Math.round((g.confidence||0.85)*100)}%`, desc: g.explanation })),
                 stages: (item.learningPath || []).map((s, idx) => ({
                   stage: idx + 1,
@@ -584,10 +576,10 @@
                   desc: s.overview || "",
                   topics: s.keyTopics || [],
                   resources: (s.recommendedResources || []).map(r => ({ title: r.title, type: r.type, est: r.estimatedHours, desc: r.description, url: r.url })),
-                  project: s.reinforcementProject?.title || "Complete reinforcement practice."
+                  project: s.reinforcementProject?.title || "Complete reinforcement project."
                 })),
-                quizzes: { q: `Key check for ${role}`, options: ["Review fundamentals", "Build projects", "Deploy app", "Write tests"], ans: 1 },
-                capstone: { title: item.capstoneBrief?.title || "Capstone Project", desc: item.capstoneBrief?.description || "Build a complete portfolio project." },
+                quizzes: { q: `Key check for ${role}`, options: ["Master prerequisites & theory", "Build real-world projects", "Deploy & test applications", "Implement CI/CD"], ans: 0 },
+                capstone: { title: item.capstoneBrief?.title || "Engineering Capstone Project", desc: item.capstoneBrief?.description || "Build a complete production project." },
                 opportunities: (item.opportunities || []).map(o => ({ name: o.title || o.name, desc: o.description, url: o.url || "#" }))
               };
             }
@@ -596,33 +588,33 @@
           console.warn("Apify API call failed or timed out, falling back to local synthesis:", err);
         }
       } else {
-        // Instant custom synthesis
-        await new Promise(res => setTimeout(res, 800)); // smooth experience
+        // Instant custom technical synthesis
+        await new Promise(res => setTimeout(res, 800));
         activeData = {
           role: role,
           level: level,
           hours: hours,
           location: loc,
-          domain: domain || "General",
+          domain: domain || "Technical Domain",
           known: known,
-          pitch: `Tailored development path for a ${level} in ${loc} focusing on ${domain || role}. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).`,
+          pitch: `Tailored 6-stage engineering path for a ${level} in ${loc} focusing on ${domain || role}. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).`,
           gaps: [
-            { skill: `${role} Fundamentals & Workflow`, type: "Foundation", req: "90%", desc: "Core prerequisite topics needed before advancing." },
-            { skill: "Tooling & Environment Setup", type: "Core", req: "85%", desc: "Crucial for build performance and testing." }
+            { skill: `${role} Foundations & Computer Science Basics`, type: "Foundation", req: "92%", desc: "Core prerequisite principles needed before advancing to complex frameworks." },
+            { skill: "Tooling, Version Control & Environment Setup", type: "Core", req: "88%", desc: "Crucial for build performance, testing, and team collaboration." }
           ],
           stages: [
-            { stage: 1, title: "Foundations", desc: `Master basic terminology, tool installation, and foundational principles for ${role}.`, topics: ["Core Terminology", "Workspace Setup", "Basic Syntax/Tools"], resources: [{ title: `${role} Starter Guide`, type: "Doc", est: "4 hrs", desc: "Essential overview.", url: "https://google.com" }], project: `Build a starter project incorporating ${known[0] || 'core basics'}.` },
-            { stage: 2, title: "Core Skills", desc: "Build hands-on proficiency with essential frameworks and tools.", topics: ["Primary Frameworks", "Best Practices", "Debugging"], resources: [{ title: `${role} Core Mastery`, type: "Course", est: "10 hrs", desc: "In-depth tutorials.", url: "https://coursera.org" }], project: "Complete an intermediate project module." },
-            { stage: 3, title: "Specialization", desc: `Deep dive into ${domain || 'advanced topics'} tailored to your track.`, topics: ["Domain Patterns", "Optimization", "Advanced Workflows"], resources: [{ title: "Specialization Deep-Dive", type: "YouTube", est: "6 hrs", desc: "Advanced techniques.", url: "https://youtube.com" }], project: "Deliver a specialized project component." },
-            { stage: 4, title: "Build & Deploy", desc: "Package and publish your work for real-world testing.", topics: ["Deployment", "CI/CD & Hosting", "Performance Tuning"], resources: [{ title: "Deployment Guide", type: "Doc", est: "3 hrs", desc: "Publishing steps.", url: "https://vercel.com" }], project: "Deploy your project live to the web." },
-            { stage: 5, title: "Prove & Publish", desc: "Document findings, generate case studies, and write clear READMEs.", topics: ["Documentation", "Benchmarking", "Portfolio Writing"], resources: [{ title: "Writing Portfolio Reports", type: "Article", est: "2 hrs", desc: "Structure case studies.", url: "https://medium.com" }], project: "Publish your open-source repo or portfolio entry." },
-            { stage: 6, title: "Advance & Scale", desc: "Automation, scaling, and advanced industry trends.", topics: ["Automation", "Scaling", "Industry Standards"], resources: [{ title: "Advanced Architectures", type: "Course", est: "12 hrs", desc: "Master level skills.", url: "https://udemy.com" }], project: "Implement automated workflows and optimizations." }
+            { stage: 1, title: "Foundations", desc: `Master basic syntax, CLI environment, and foundational computer science principles for ${role}.`, topics: ["Core Syntax & Logic", "Environment Setup", "Git & Version Control"], resources: [{ title: `${role} Fundamentals`, type: "Doc", est: "6 hrs", desc: "Essential overview.", url: "https://google.com" }], project: `Build a foundational tool CLI incorporating ${known[0] || 'core programming'}.` },
+            { stage: 2, title: "Core Architecture", desc: "Build hands-on proficiency with primary frameworks, databases, and APIs.", topics: ["Primary Frameworks", "API Design", "Database Schemas"], resources: [{ title: `${role} Core Mastery`, type: "Course", est: "12 hrs", desc: "In-depth technical tutorials.", url: "https://coursera.org" }], project: "Complete a full CRUD module." },
+            { stage: 3, title: "Specialization", desc: `Deep dive into ${domain || 'advanced topics'} tailored to your track.`, topics: ["Domain Patterns", "Performance Optimization", "Security"], resources: [{ title: "Technical Specialization Guide", type: "Doc", est: "8 hrs", desc: "Advanced engineering patterns.", url: "https://github.com" }], project: "Deliver a specialized production module." },
+            { stage: 4, title: "Build & Deploy", desc: "Package, containerize, and deploy your engineering applications.", topics: ["Docker Containerization", "CI/CD Pipelines", "Cloud Deployment"], resources: [{ title: "Cloud Deployment Guide", type: "Doc", est: "4 hrs", desc: "Publishing & containerization.", url: "https://vercel.com" }], project: "Deploy your app live with automated CI/CD." },
+            { stage: 5, title: "Prove & Test", desc: "Add comprehensive unit/integration testing and generate benchmark reports.", topics: ["Automated Testing", "Code Reviews", "Benchmarking"], resources: [{ title: "Software Testing Best Practices", type: "Article", est: "3 hrs", desc: "Writing resilient tests.", url: "https://medium.com" }], project: "Achieve 80%+ automated test coverage." },
+            { stage: 6, title: "Advance & Scale", desc: "System architecture, microservices, scaling, and automation.", topics: ["Distributed Systems", "Scaling Infrastructure", "Monitoring"], resources: [{ title: "Distributed Systems & Cloud Architecture", type: "Course", est: "15 hrs", desc: "Master level systems design.", url: "https://udemy.com" }], project: "Implement automated monitoring & scaling pipelines." }
           ],
-          quizzes: { q: `What is the first priority when mastering ${role}?`, options: ["Mastering prerequisites and foundations", "Skipping to advanced tools", "Ignoring documentation", "Writing un-tested code"], ans: 0 },
-          capstone: { title: `${role} Capstone Portfolio Deliverable`, desc: `Build, document, and publish an end-to-end ${role} project incorporating ${domain}.` },
+          quizzes: { q: `What is the first priority when mastering ${role}?`, options: ["Mastering prerequisite theory and core foundations", "Skipping to advanced cloud deployment", "Ignoring automated tests", "Writing un-versioned code"], ans: 0 },
+          capstone: { title: `${role} Production Capstone Deliverable`, desc: `Build, document, test, and deploy a complete production-grade ${role} application incorporating ${domain}.` },
           opportunities: [
-            { name: `${loc} Tech Innovation Grant`, desc: "Opportunities for local developers and creators.", url: "https://google.com" },
-            { name: "Global Hackathon Challenge", desc: "Build & submit projects for prize pools.", url: "https://devpost.com" }
+            { name: `${loc} Developer Innovation Challenge`, desc: "Hackathon & grant opportunities for technical builders.", url: "https://google.com" },
+            { name: "Global Technical Hackathon", desc: "Build & submit software projects for prizes.", url: "https://devpost.com" }
           ]
         };
       }
@@ -694,8 +686,8 @@
       document.getElementById('capstoneDetails').innerHTML = `
         <p class="text-sm text-slate-700 leading-relaxed">${data.capstone.desc}</p>
         <div class="pt-2 flex flex-wrap gap-2 text-xs">
-          <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-semibold">Portfolio Ready</span>
-          <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">Self-Paced</span>
+          <span class="px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold">Portfolio Ready</span>
+          <span class="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 font-semibold">Self-Paced</span>
         </div>
       `;
 
