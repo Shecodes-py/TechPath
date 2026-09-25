@@ -78,6 +78,7 @@ RESOURCE RULES:
         self,
         api_key: Optional[str] = None,
         anthropic_key: Optional[str] = None,
+        openai_key: Optional[str] = None,
         provider: str = "auto",
     ):
         self.gemini_key = _usable_key(
@@ -85,6 +86,9 @@ RESOURCE RULES:
         )
         self.anthropic_key = _usable_key(
             anthropic_key or os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")
+        )
+        self.openai_key = _usable_key(
+            openai_key or os.getenv("OPENAI_API_KEY")
         )
         self.provider = (provider or "auto").strip().lower()
 
@@ -97,23 +101,32 @@ RESOURCE RULES:
         prompt = self._build_user_prompt(learner, web_resources)
         last_error: Optional[Exception] = None
 
-        for backend in self._backends():
+        backends = self._backends()
+        logger.info(f"[LLMEngine] Available backends: {backends!r} (Provider preference: '{self.provider}')")
+
+        for backend in backends:
             try:
                 if backend == "gemini":
-                    logger.info("Invoking Gemini model: gemini-flash-latest")
+                    logger.info("[LLM] Invoking Google Gemini model...")
                     raw = await call_gemini_latest(self.SYSTEM_PROMPT + "\n\n" + prompt, self.gemini_key)
-                else:
-                    logger.info("Invoking Claude model: claude-sonnet-4-5")
+                elif backend == "claude":
+                    logger.info("[LLM] Invoking Anthropic Claude model...")
                     raw = await call_claude(prompt, self.anthropic_key, system=self.SYSTEM_PROMPT)
+                elif backend == "openai":
+                    logger.info("[LLM] Invoking OpenAI GPT model...")
+                    from src.llm_clients import call_openai
+                    raw = await call_openai(prompt, self.openai_key, system=self.SYSTEM_PROMPT)
+                else:
+                    continue
                 return parse_llm_json(raw)
             except Exception as e:
-                logger.warning(f"{backend} generation failed: {e}")
+                logger.warning(f"[LLM] Backend '{backend}' generation failed: {e}")
                 last_error = e
 
         if last_error:
-            logger.error(f"All LLM backends failed ({last_error}). Switching to fallback engine.")
+            logger.error(f"[LLMEngine] All LLM API calls failed ({last_error}). Executing TechPath engine fallback.")
         else:
-            logger.info("No LLM API key supplied. Executing multi-domain TechPath fallback engine.")
+            logger.info("[LLMEngine] No LLM API key configured in environment. Executing multi-domain TechPath engine fallback.")
         return self._fallback_generation(learner, web_resources)
 
     def _backends(self) -> list[str]:
@@ -123,7 +136,9 @@ RESOURCE RULES:
             ordered.append("gemini")
         if provider in ("claude", "anthropic", "auto") and self.anthropic_key:
             ordered.append("claude")
-        if provider in ("claude", "anthropic") and self.gemini_key and "gemini" not in ordered:
+        if provider in ("openai", "auto") and self.openai_key:
+            ordered.append("openai")
+        if provider in ("claude", "anthropic", "openai") and self.gemini_key and "gemini" not in ordered:
             ordered.append("gemini")
         return ordered
 
