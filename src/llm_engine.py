@@ -166,15 +166,363 @@ Ensure topics and projects match the role '{learner.goal}' specifically.
         location = learner.location or "Nigeria"
 
         # Check domain category
-        is_cloud = any(k in goal_lower for k in ["cloud", "devops", "kubernetes", "aws", "infrastructure", "sre", "sysadmin"])
-        is_software = any(k in goal_lower for k in ["software", "backend", "frontend", "fullstack", "web", "developer"])
+        is_qa = any(k in goal_lower for k in ["qa", "test", "tester", "testing", "quality", "sdet", "automation engineer"])
+        is_cloud = any(k in goal_lower for k in ["cloud", "devops", "kubernetes", "aws", "infrastructure", "sre", "sysadmin", "cybersecurity"])
+        is_ml = any(k in goal_lower for k in ["machine learning", "ml", "ai", "deep learning", "data science", "nlp", "computer vision", "pytorch", "tensorflow"])
+        is_software = any(k in goal_lower for k in ["software", "backend", "frontend", "fullstack", "web", "developer", "engineer", "programmer", "coding"])
         
-        if is_cloud:
+        if is_qa:
+            return self._build_qa_testing_path(learner, niche, location)
+        elif is_cloud:
             return self._build_cloud_devops_path(learner, niche, location)
-        elif is_software:
-            return self._build_software_engineer_path(learner, niche, location)
-        else:
+        elif is_ml:
             return self._build_machine_learning_path(learner, niche, location)
+        else:
+            return self._build_software_engineer_path(learner, niche, location)
+
+    def _build_qa_testing_path(self, learner: LearnerInput, niche: str, location: str) -> Dict[str, Any]:
+        goal = learner.goal
+        return {
+            "targetRole": goal,
+            "summaryPitch": f"Tailored {goal} roadmap for a {learner.currentLevel} in {location} focusing on {niche}. Designed with strict prerequisite ordering (Testing Principles & Manual QA → Automated Testing with Python/Playwright → API & Database Testing → CI/CD Test Automation → Performance & Security Testing → Quality Engineering Architecture).",
+            "skillGaps": [
+                {
+                    "skill": "Software Testing Principles & Test Case Design",
+                    "category": "Foundation",
+                    "isRequiredFor": "Writing Test Plans, Boundary Value Analysis & Defect Reporting",
+                    "confidence": 0.95,
+                    "explanation": "Essential prerequisite for systematically designing test cases and identifying software defects before writing automation scripts."
+                },
+                {
+                    "skill": "Test Automation Frameworks (PyTest / Playwright)",
+                    "category": "Core",
+                    "isRequiredFor": "Automated UI Regression Suites & E2E Testing",
+                    "confidence": 0.92,
+                    "explanation": "Critical prerequisite for writing automated test scripts and integrating quality gates into software build pipelines."
+                },
+                {
+                    "skill": "API & Database Testing (Postman & SQL)",
+                    "category": "Specialization",
+                    "isRequiredFor": "Backend Integration Testing & Data Verification",
+                    "confidence": 0.88,
+                    "explanation": f"Required for verifying backend microservice endpoints, transaction payloads, and database consistency in {niche} platforms."
+                }
+            ],
+            "roadmap": [
+                {
+                    "stageNumber": 1,
+                    "stageName": "1. Foundations",
+                    "description": "Master software testing principles, SDLC/STLC models, test case design techniques, and bug lifecycle management.",
+                    "focusTopics": ["STLC & SDLC Models", "Boundary Value Analysis", "Equivalence Partitioning", "Bug Reporting & Jira", "Git Basics"],
+                    "prerequisitesRequired": ["None"],
+                    "resources": [
+                        {
+                            "title": "Software Testing Fundamentals Guide",
+                            "url": "https://softwaretestingfundamentals.com/",
+                            "resourceType": "documentation",
+                            "difficulty": "Beginner",
+                            "estimatedHours": 8,
+                            "skillsTaught": ["Test Case Design", "Bug Reporting", "STLC"],
+                            "prerequisites": [],
+                            "summary": "Comprehensive guide to manual testing, test plans, and defect lifecycles.",
+                            "isFree": True
+                        },
+                        {
+                            "title": "Git & GitHub Crash Course for QA Engineers",
+                            "url": "https://www.youtube.com/",
+                            "resourceType": "youtube",
+                            "difficulty": "Beginner",
+                            "estimatedHours": 3,
+                            "skillsTaught": ["Git", "Version Control", "Pull Requests"],
+                            "prerequisites": [],
+                            "summary": "Learn version control essentials for managing test automation repositories.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-1",
+                            "stage": "1. Foundations",
+                            "questionType": "conceptual",
+                            "question": "What is the difference between Boundary Value Analysis (BVA) and Equivalence Partitioning? Why is severity different from priority in bug reports?",
+                            "options": None,
+                            "correctAnswerOrRubric": "BVA tests boundary values around partitions. Severity measures technical impact; priority measures business urgency.",
+                            "explanation": "Tests core understanding of test design techniques and defect classification."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "project-stage-1",
+                            "title": f"Comprehensive Test Plan & Bug Report Suite for {niche} Web Application",
+                            "stage": "1. Foundations",
+                            "projectType": "individual",
+                            "problemStatement": f"Analyze a {niche} transaction application, create test scenarios, write manual test cases, and log detailed bug reports.",
+                            "objectives": ["Draft a Master Test Plan", "Write 20+ detailed test cases", "Log structured bug reports with repro steps"],
+                            "skillsTested": ["Test Case Writing", "Equivalence Partitioning", "Jira Defect Logging"],
+                            "suggestedStack": ["Jira / Zephyr", "Google Docs / Excel", "GitHub"],
+                            "deliverables": ["Master Test Plan PDF", "Test Case Matrix Spreadsheet", "Bug Reports with Severity/Priority"],
+                            "evaluationRubric": ["Test cases must cover positive, negative, and boundary conditions with clear expected vs actual results."]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 2,
+                    "stageName": "2. Core Skills",
+                    "description": "Build test automation skills using Python, PyTest, and Playwright for cross-browser UI testing.",
+                    "focusTopics": ["Python for QA", "PyTest Assertions & Fixtures", "Playwright Page Object Model (POM)", "Element Locators & Wait Strategies"],
+                    "prerequisitesRequired": ["Test Case Design", "Python Basics"],
+                    "resources": [
+                        {
+                            "title": "PyTest Official Documentation & Tutorials",
+                            "url": "https://docs.pytest.org/",
+                            "resourceType": "documentation",
+                            "difficulty": "Beginner",
+                            "estimatedHours": 6,
+                            "skillsTaught": ["PyTest", "Test Fixtures", "Parameterized Testing"],
+                            "prerequisites": ["Python Basics"],
+                            "summary": "Master Python's most popular testing framework.",
+                            "isFree": True
+                        },
+                        {
+                            "title": "Playwright Python Automation Masterclass",
+                            "url": "https://playwright.dev/python/",
+                            "resourceType": "documentation",
+                            "difficulty": "Beginner",
+                            "estimatedHours": 10,
+                            "skillsTaught": ["Playwright", "UI Automation", "Page Object Model"],
+                            "prerequisites": ["PyTest"],
+                            "summary": "Fast, reliable end-to-end testing for modern web apps.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [],
+                    "projects": [
+                        {
+                            "id": "project-stage-2",
+                            "title": "Automated Cross-Browser UI Test Suite using Playwright & PyTest",
+                            "stage": "2. Core Skills",
+                            "projectType": "individual",
+                            "problemStatement": "Automate manual UI regression tests for authentication, form validation, and user dashboard flows.",
+                            "objectives": ["Implement Page Object Model (POM)", "Write automated PyTest test scripts", "Add explicit waits & locators"],
+                            "skillsTested": ["Playwright", "PyTest", "Page Object Model", "UI Automation"],
+                            "suggestedStack": ["Python", "Playwright", "PyTest", "VS Code"],
+                            "deliverables": ["Automated test suite repo", "HTML test execution report", "Execution video recordings"],
+                            "evaluationRubric": ["Tests must execute headlessly without flaky waits, using clean Page Object Model architecture."]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 3,
+                    "stageName": "3. Specialization",
+                    "description": "Master API testing with Postman & Requests, SQL database verification, and domain edge case validation.",
+                    "focusTopics": ["REST API Testing", "Postman Collections & Newman", "SQL Queries for DB Testing", "JSON Schema Validation"],
+                    "prerequisitesRequired": ["PyTest", "REST API Basics"],
+                    "resources": [
+                        {
+                            "title": "Postman API Testing Essentials",
+                            "url": "https://www.postman.com/",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 8,
+                            "skillsTaught": ["Postman", "REST API", "JSON Schema"],
+                            "prerequisites": ["API Basics"],
+                            "summary": "Automate API assertions, environment variables, and collection runs.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [],
+                    "projects": [
+                        {
+                            "id": "project-stage-3",
+                            "title": f"Automated {niche} REST API & Database Testing Suite",
+                            "stage": "3. Specialization",
+                            "projectType": "individual",
+                            "problemStatement": f"Verify backend transaction APIs, validate response payloads, HTTP status codes, and database records in a {niche} system.",
+                            "objectives": ["Create Postman collection with tests", "Automate API testing with Python Requests", "Run SQL DB assertions"],
+                            "skillsTested": ["API Testing", "Python Requests", "SQL", "Postman / Newman"],
+                            "suggestedStack": ["Python Requests", "Postman", "PostgreSQL / SQLite", "PyTest"],
+                            "deliverables": ["Postman collection JSON", "PyTest API automation repo", "Database validation scripts"],
+                            "evaluationRubric": ["API tests must validate status codes, response headers, JSON payload schemas, and DB consistency."]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 4,
+                    "stageName": "4. Build & Deploy",
+                    "description": "Integrate test automation into CI/CD pipelines (GitHub Actions) with automated test reports.",
+                    "focusTopics": ["GitHub Actions CI/CD", "Allure / PyTest HTML Reports", "Headless Parallel Execution", "Slack/Email Test Alerts"],
+                    "prerequisitesRequired": ["Playwright UI Testing", "API Automation"],
+                    "resources": [
+                        {
+                            "title": "GitHub Actions for Automated Testing",
+                            "url": "https://docs.github.com/en/actions",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 6,
+                            "skillsTaught": ["GitHub Actions", "CI/CD", "Automated Workflows"],
+                            "prerequisites": ["Git"],
+                            "summary": "Automate running PyTest and Playwright suites on pull requests.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [],
+                    "projects": [
+                        {
+                            "id": "project-stage-4",
+                            "title": "CI/CD Automated Test Execution Pipeline with HTML Reports",
+                            "stage": "4. Build & Deploy",
+                            "projectType": "individual",
+                            "problemStatement": "Automate test suite execution on every code commit and generate visual test reports for stakeholders.",
+                            "objectives": ["Write GitHub Actions workflow", "Configure parallel test runs", "Generate Allure HTML reports"],
+                            "skillsTested": ["GitHub Actions", "CI/CD", "Allure Reporting", "PyTest"],
+                            "suggestedStack": ["GitHub Actions", "PyTest-HTML", "Allure", "Python"],
+                            "deliverables": [".github/workflows/test.yml", "Hosted Allure Report link", "Pipeline execution logs"],
+                            "evaluationRubric": ["Workflow must run automated tests on pull requests and publish an interactive HTML report."]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 5,
+                    "stageName": "5. Prove & Testing",
+                    "description": "Conduct performance load testing (k6 / JMeter) and security vulnerability testing (OWASP Top 10).",
+                    "focusTopics": ["Load & Stress Testing with k6", "OWASP Top 10 for QA", "API Security Scanning", "Performance Bottleneck Analysis"],
+                    "prerequisitesRequired": ["API Testing", "CI/CD Pipelines"],
+                    "resources": [
+                        {
+                            "title": "k6 Performance & Load Testing Documentation",
+                            "url": "https://k6.io/docs/",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 8,
+                            "skillsTaught": ["k6", "Load Testing", "Performance Metrics"],
+                            "prerequisites": ["API Basics"],
+                            "summary": "Developer-centric performance load testing for APIs and microservices.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [],
+                    "projects": [
+                        {
+                            "id": "project-stage-5",
+                            "title": f"{niche} API Performance Load & Security Audit",
+                            "stage": "5. Prove & Testing",
+                            "projectType": "individual",
+                            "problemStatement": f"Simulate peak user load on a {niche} application to identify latency bottlenecks and security flaws.",
+                            "objectives": ["Write k6 load testing scripts", "Simulate 500 concurrent users", "Perform OWASP ZAP security scan"],
+                            "skillsTested": ["k6 Load Testing", "OWASP Top 10", "Security Testing", "Latency Analysis"],
+                            "suggestedStack": ["k6", "OWASP ZAP", "Grafana", "Python"],
+                            "deliverables": ["k6 performance script (.js)", "Load test metrics report", "Security vulnerability report"],
+                            "evaluationRubric": ["Report must pinpoint response time bottlenecks and identify potential OWASP security vulnerabilities."]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 6,
+                    "stageName": "6. Advance & Systems",
+                    "description": "Architect scalable BDD automation frameworks (Behave/Cucumber), Dockerized grid execution, and AI test generation.",
+                    "focusTopics": ["BDD Framework (Behave / Gherkin)", "Dockerized Selenium/Playwright Grid", "AI-Powered Test Case Generation", "SDET Leadership"],
+                    "prerequisitesRequired": ["Playwright", "CI/CD Pipelines"],
+                    "resources": [
+                        {
+                            "title": "Behavior-Driven Development (BDD) with Behave",
+                            "url": "https://behave.readthedocs.io/",
+                            "resourceType": "documentation",
+                            "difficulty": "Advanced",
+                            "estimatedHours": 10,
+                            "skillsTaught": ["BDD", "Gherkin", "Behave", "Test Architecture"],
+                            "prerequisites": ["Python Automation"],
+                            "summary": "Write human-readable Gherkin feature files backed by Python step definitions.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [],
+                    "projects": [
+                        {
+                            "id": "project-stage-6",
+                            "title": "Enterprise BDD Automation Architecture with Docker & AI Test Assist",
+                            "stage": "6. Advance & Systems",
+                            "projectType": "individual",
+                            "problemStatement": "Build a scalable, BDD-driven test automation framework supporting parallel browser execution in Docker containers.",
+                            "objectives": ["Write Gherkin feature files", "Implement Behave step definitions", "Containerize test execution"],
+                            "skillsTested": ["BDD", "Behave / Gherkin", "Docker", "Parallel Execution"],
+                            "suggestedStack": ["Python", "Behave", "Playwright", "Docker"],
+                            "deliverables": ["BDD automation framework repo", "Docker Compose test grid", "Architecture documentation"],
+                            "evaluationRubric": ["Framework must execute Gherkin scenarios in parallel inside Docker containers with zero setup required."]
+                        }
+                    ]
+                }
+            ],
+            "capstone": {
+                "title": f"Production-Grade {niche} Test Automation & Quality Assurance Platform",
+                "domainTarget": "Quality Engineering & Test Automation",
+                "problemStatement": f"Design, build, and deploy an end-to-end Quality Assurance & Test Automation framework for a {niche} platform covering manual test suites, UI Playwright automation, REST API validation, load testing with k6, and GitHub Actions CI/CD integration.",
+                "objectives": [
+                    "Draft comprehensive Master Test Plan and test scenario matrix",
+                    "Build automated Playwright UI regression suite using Page Object Model",
+                    "Automate REST API testing with Python Requests & JSON schema validation",
+                    "Configure GitHub Actions CI/CD for automated test execution and Allure reporting"
+                ],
+                "skillsTested": ["Software Testing", "Playwright", "PyTest", "API Testing", "k6", "GitHub Actions", "Docker"],
+                "suggestedStack": ["Python", "Playwright", "PyTest", "Postman", "k6", "GitHub Actions", "Allure"],
+                "deliverables": [
+                    "Complete Test Automation GitHub Repository",
+                    "Interactive Allure Test Report Dashboard",
+                    "k6 Performance Load Audit Report",
+                    "Master Test Plan & Defect Lifecycle Documentation"
+                ],
+                "milestones": [
+                    "Milestone 1: Master Test Plan, Test Cases & Manual Testing Matrix",
+                    "Milestone 2: Playwright UI Automation Suite with Page Object Model",
+                    "Milestone 3: REST API Automation Suite & Database Validation",
+                    "Milestone 4: GitHub Actions CI/CD Pipeline & Allure Reporting Setup"
+                ],
+                "evaluationCriteria": [
+                    "100% test automation pass rate on stable environment",
+                    "Zero manual steps required to run regression suite in CI/CD",
+                    "Clean Page Object Model architecture with no hardcoded waits",
+                    "Comprehensive test coverage report covering UI, API, and load metrics"
+                ],
+                "extensionIdeas": [
+                    "Integrate visual regression testing with Percy / Applitools",
+                    "Build an AI test generator assistant that creates Gherkin features from user stories"
+                ]
+            },
+            "opportunities": [
+                {
+                    "title": "Apify × She Code Africa Quality Engineering Challenge 2026",
+                    "organizer": "Apify & She Code Africa",
+                    "opportunityType": "hackathon",
+                    "deadline": "2026-11-01",
+                    "eligibility": "Open to QA engineers, software testers, and tech learners across Africa",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Quality Assurance", "Test Automation", "PyTest", "Playwright"],
+                    "difficultyEstimate": "Beginner to Intermediate friendly",
+                    "applicationUrl": "https://apify.com/hackathons",
+                    "sourceUrl": "https://apify.com/",
+                    "matchReason": f"Directly aligns with your target role ({goal}) and testing automation goals."
+                },
+                {
+                    "title": "Global Test Automation & SDET Hackathon",
+                    "organizer": "Ministry of Testing",
+                    "opportunityType": "competition",
+                    "deadline": "2026-11-20",
+                    "eligibility": "Software testers and automation engineers globally",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Playwright", "Selenium", "API Testing", "CI/CD"],
+                    "difficultyEstimate": "Intermediate",
+                    "applicationUrl": "https://www.ministryoftesting.com/",
+                    "sourceUrl": "https://www.ministryoftesting.com/",
+                    "matchReason": f"Great opportunity to showcase test automation frameworks and network with QA professionals."
+                }
+            ],
+            "sources": [
+                "https://softwaretestingfundamentals.com/",
+                "https://docs.pytest.org/",
+                "https://playwright.dev/python/",
+                "https://k6.io/docs/",
+                "https://docs.github.com/en/actions"
+            ]
+        }
 
     def _build_cloud_devops_path(self, learner: LearnerInput, niche: str, location: str) -> Dict[str, Any]:
         goal = learner.goal
