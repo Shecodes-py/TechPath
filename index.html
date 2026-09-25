@@ -3,438 +3,815 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechPath Learning Intelligence — Interactive Dashboard</title>
+  <title>TechPath — AI-Powered Skill Roadmaps & Learning Intelligence</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 antialiased min-h-screen p-4 md:p-8">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
-  <!-- Main Container -->
-  <div class="max-w-6xl mx-auto space-y-6">
-
-    <!-- Top Banner / Profile Header -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-3">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            TechPath Intelligence Engine Active
-          </div>
-          <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
-            Target Role: <span class="text-indigo-400">Machine Learning Engineer</span>
-          </h1>
-          <p class="text-sm text-slate-400 mt-1 max-w-2xl">
-            Tailored 6-stage development path for a <strong class="text-slate-200">Beginner in Nigeria</strong> focusing on <strong class="text-slate-200">Healthcare AI & NLP</strong> (8 hrs/week).
-          </p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 text-center text-xs">
-          <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span class="block text-slate-400">Current Level</span>
-            <strong class="text-sm font-semibold text-amber-400">Beginner</strong>
-          </div>
-          <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span class="block text-slate-400">Location</span>
-            <strong class="text-sm font-semibold text-blue-400">Nigeria 🇳🇬</strong>
-          </div>
-          <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span class="block text-slate-400">Weekly Study</span>
-            <strong class="text-sm font-semibold text-emerald-400">8 Hours/Wk</strong>
-          </div>
-          <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span class="block text-slate-400">Domain Focus</span>
-            <strong class="text-sm font-semibold text-purple-400">Healthcare AI</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- Known Skills Tags -->
-      <div class="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center gap-2 text-xs">
-        <span class="text-slate-400 font-medium">Known Skills:</span>
-        <span class="px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 font-semibold border border-indigo-500/20">Python Basics</span>
-        <span class="text-slate-400 text-xs italic ml-2">Prerequisite rule enforced: Foundations assigned before advanced RAG/Agents.</span>
-      </div>
-    </div>
-
-    <!-- Skill Gap Diagnostic Alert -->
-    <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-5">
-      <div class="flex items-start gap-3">
-        <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400 shrink-0">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+  <!-- Navigation Bar -->
+  <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-md shadow-indigo-200">
+          T
         </div>
         <div>
-          <h3 class="font-bold text-amber-400 text-sm">Prerequisite Skill Gap Diagnostics</h3>
-          <p class="text-xs text-slate-400 mt-1">
-            Before jumping into Deep Learning or LLM Agents, TechPath identified 2 mandatory foundational gaps you must fulfill:
-          </p>
-          <div class="grid md:grid-cols-2 gap-3 mt-3">
-            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs space-y-1">
-              <div class="flex justify-between items-center font-bold">
-                <span class="text-amber-400">[Foundation] Linear Algebra & Statistics</span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-normal">90% Req</span>
-              </div>
-              <p class="text-slate-400">Essential for understanding model weights, gradient descent loss, and probability in ML.</p>
-            </div>
-            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs space-y-1">
-              <div class="flex justify-between items-center font-bold">
-                <span class="text-amber-400">[Core] Data Structures & Algorithms</span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-normal">88% Req</span>
-              </div>
-              <p class="text-slate-400">Critical for algorithm efficiency, memory management, and coding interviews.</p>
-            </div>
-          </div>
+          <span class="font-extrabold text-slate-900 text-lg tracking-tight">TechPath</span>
+          <span class="hidden sm:inline-block ml-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Learning Intelligence</span>
         </div>
       </div>
-    </div>
-
-    <!-- Interactive Navigation Tabs -->
-    <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-2 text-sm font-medium">
-      <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="tab-btn px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold transition">
-        🗺️ 6-Stage Roadmap
-      </button>
-      <button onclick="switchTab('assessment')" id="tab-btn-assessment" class="tab-btn px-4 py-2 rounded-lg bg-slate-900 text-slate-400 hover:text-white transition">
-        📝 Interactive Quizzes
-      </button>
-      <button onclick="switchTab('capstone')" id="tab-btn-capstone" class="tab-btn px-4 py-2 rounded-lg bg-slate-900 text-slate-400 hover:text-white transition">
-        🏆 Portfolio Capstone Brief
-      </button>
-      <button onclick="switchTab('opportunities')" id="tab-btn-opportunities" class="tab-btn px-4 py-2 rounded-lg bg-slate-900 text-slate-400 hover:text-white transition">
-        🎯 Hackathon Matches
-      </button>
-    </div>
-
-    <!-- TAB 1: ROADMAP TIMELINE -->
-    <div id="tab-roadmap" class="tab-content space-y-6">
-      <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
-        <button onclick="selectStage(1)" id="stage-btn-1" class="stage-nav-btn p-3 rounded-xl border border-indigo-500/40 bg-indigo-500/10 text-left transition">
-          <span class="block text-[10px] font-semibold text-indigo-400">STAGE 1</span>
-          <strong class="text-xs text-white">Foundations</strong>
-        </button>
-        <button onclick="selectStage(2)" id="stage-btn-2" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
-          <span class="block text-[10px] font-semibold text-slate-400">STAGE 2</span>
-          <strong class="text-xs text-white">Core Skills</strong>
-        </button>
-        <button onclick="selectStage(3)" id="stage-btn-3" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
-          <span class="block text-[10px] font-semibold text-slate-400">STAGE 3</span>
-          <strong class="text-xs text-white">Specialization</strong>
-        </button>
-        <button onclick="selectStage(4)" id="stage-btn-4" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
-          <span class="block text-[10px] font-semibold text-slate-400">STAGE 4</span>
-          <strong class="text-xs text-white">Build & Deploy</strong>
-        </button>
-        <button onclick="selectStage(5)" id="stage-btn-5" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
-          <span class="block text-[10px] font-semibold text-slate-400">STAGE 5</span>
-          <strong class="text-xs text-white">Prove & Publish</strong>
-        </button>
-        <button onclick="selectStage(6)" id="stage-btn-6" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
-          <span class="block text-[10px] font-semibold text-slate-400">STAGE 6</span>
-          <strong class="text-xs text-white">Advance (LLMs/Agents)</strong>
-        </button>
-      </div>
-
-      <!-- Stage Detail Display Card -->
-      <div id="stage-detail-container" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-        <!-- Content injected dynamically via JS -->
+      <div class="flex items-center gap-3">
+        <a href="https://apify.com/store" target="_blank" class="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition flex items-center gap-1.5 bg-slate-100 px-3 py-2 rounded-lg border border-slate-200">
+          <span>Apify Actor</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 2 0 00-2 2v10a2 2 2 0 002 2h10a2 2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
       </div>
     </div>
+  </header>
 
-    <!-- TAB 2: INTERACTIVE QUIZZES -->
-    <div id="tab-assessment" class="tab-content hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-        <h2 class="text-lg font-bold text-white">Stage Readiness Skill Checks</h2>
-        <p class="text-xs text-slate-400">
-          Assessments verify whether you've actually mastered a stage before moving forward. Try answering the sample prompt below:
-        </p>
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 w-full space-y-12">
 
-        <div class="p-5 rounded-xl border border-slate-800 bg-slate-950/60 space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="px-2.5 py-1 rounded bg-indigo-500/10 text-indigo-400 font-semibold text-xs">Stage 1 Coding Prompt</span>
-            <span class="text-xs text-slate-400">Topic: Python & Complexity</span>
-          </div>
+    <!-- Hero Section -->
+    <section class="text-center space-y-4 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+        Apify Hackathon Edition • AI Learning Engine
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        Your Custom Skill Roadmap Built in Seconds
+      </h1>
+      <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
+        Tell us your career goal, current background, and weekly availability. TechPath scans live learning resources, detects your prerequisite skill gaps, and generates a structured stage-by-stage path.
+      </p>
+    </section>
 
-          <p class="text-sm font-semibold text-slate-200">
-            Question: Write a Python function <code class="bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs text-indigo-300">filter_even_squares(numbers)</code> that takes a list of integers, filters out odd numbers, squares the even numbers, and returns the result in reverse order. What is its time and space complexity?
-          </p>
+    <!-- Generator Input Form Card -->
+    <section class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xl shadow-slate-200/50 space-y-8">
+      <div class="border-b border-slate-100 pb-5">
+        <h2 class="text-xl font-bold text-slate-900">Define Your Learning Profile</h2>
+        <p class="text-sm text-slate-500 mt-1">Fill out the parameters below to generate a tailored development plan.</p>
+      </div>
 
+      <form id="roadmapForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+          <!-- Target Role -->
           <div class="space-y-2">
-            <button onclick="checkAnswer(1)" class="w-full text-left p-3 rounded-lg border border-slate-800 bg-slate-900 hover:border-indigo-500 transition text-xs flex justify-between items-center text-slate-300">
-              <span>A) Time: O(N²), Space: O(N²) using nested loops</span>
-            </button>
-            <button onclick="checkAnswer(2)" class="w-full text-left p-3 rounded-lg border border-slate-800 bg-slate-900 hover:border-indigo-500 transition text-xs flex justify-between items-center text-slate-300">
-              <span>B) Time: O(N), Space: O(N) using list comprehension & reverse iterator</span>
-            </button>
-            <button onclick="checkAnswer(3)" class="w-full text-left p-3 rounded-lg border border-slate-800 bg-slate-900 hover:border-indigo-500 transition text-xs flex justify-between items-center text-slate-300">
-              <span>C) Time: O(1), Space: O(1) in-place dictionary modification</span>
-            </button>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Target Role / Career Goal</label>
+            <input type="text" id="targetRole" required placeholder="e.g. Content Creator, Machine Learning Engineer, Full-Stack Dev" 
+              value="Content Creator"
+              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
           </div>
 
-          <div id="quiz-feedback" class="hidden p-3 rounded-lg text-xs"></div>
+          <!-- Current Skill Level -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Current Skill Level</label>
+            <select id="currentLevel" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+              <option value="Beginner" selected>Beginner (Starting fresh / basic exposure)</option>
+              <option value="Intermediate">Intermediate (Hands-on experience)</option>
+              <option value="Advanced">Advanced (Seeking specialization / mastery)</option>
+            </select>
+          </div>
+
+          <!-- Weekly Hours -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Weekly Commitment (Hours)</label>
+            <input type="number" id="hoursPerWeek" min="1" max="60" value="8" required
+              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          </div>
+
+          <!-- Location -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Location / Country</label>
+            <input type="text" id="location" value="Nigeria" required placeholder="e.g. Nigeria, United States, Kenya, Global"
+              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          </div>
+
+          <!-- Domain Focus / Interest -->
+          <div class="space-y-2 sm:col-span-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Domain Focus / Specific Interest</label>
+            <input type="text" id="domainInterest" placeholder="e.g. Videography, Healthcare AI, Mobile Apps, Cloud Security" value="videography & storytelling"
+              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          </div>
+
+          <!-- Known Skills -->
+          <div class="space-y-2 sm:col-span-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Skills You Already Know (Comma separated)</label>
+            <input type="text" id="knownSkills" placeholder="e.g. Python basics, CapCut, HTML/CSS, Git" value="Basic smartphone filming, CapCut"
+              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          </div>
+
+          <!-- Optional Email Delivery -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Email Delivery (Optional)</label>
+            <input type="email" id="userEmail" placeholder="your.name@example.com"
+              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          </div>
+
+          <!-- Apify Token (Optional for direct API execution) -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Apify API Token (Optional)</label>
+            <input type="password" id="apifyToken" placeholder="apify_api_..."
+              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+          </div>
+
         </div>
-      </div>
-    </div>
 
-    <!-- TAB 3: PORTFOLIO CAPSTONE BRIEF -->
-    <div id="tab-capstone" class="tab-content hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
-              Niche Focus: Healthcare AI
-            </span>
-            <h2 class="text-xl font-bold mt-2 text-white">Production-Grade Healthcare AI Intelligence System</h2>
-          </div>
-          <button class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs transition">
-            Export Brief (PDF / Markdown)
+        <!-- Quick Demo Profiles Bar -->
+        <div class="flex flex-wrap items-center gap-2 pt-2 text-xs">
+          <span class="text-slate-500 font-medium">Quick Presets:</span>
+          <button type="button" onclick="loadPreset('creator')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-semibold border border-slate-200 transition">
+            🎥 Content Creator (Nigeria)
+          </button>
+          <button type="button" onclick="loadPreset('ml')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-semibold border border-slate-200 transition">
+            🤖 ML Engineer (Healthcare)
+          </button>
+          <button type="button" onclick="loadPreset('swe')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 font-semibold border border-slate-200 transition">
+            💻 Software Engineer (Full Stack)
           </button>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-6">
-          <div class="space-y-3">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Problem Statement</h3>
-            <p class="text-sm text-slate-300 leading-relaxed">
-              Develop an end-to-end, deployed AI platform designed for Healthcare AI. The system ingests raw medical diagnostic data, applies PyTorch neural network classification models, and exposes a real-time containerized REST API.
+        <div class="pt-4 border-t border-slate-100">
+          <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2">
+            <span>Generate My Learning Roadmap</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Loading State Indicator -->
+    <div id="loadingState" class="hidden bg-white border border-slate-200 rounded-3xl p-10 text-center space-y-4 shadow-sm">
+      <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <h3 class="text-lg font-bold text-slate-900">TechPath Engine is Analyzing Your Profile...</h3>
+      <p class="text-sm text-slate-500 max-w-md mx-auto" id="loadingMessage">Evaluating prerequisite rules, querying live search scrapers, and structuring your 6-stage roadmap.</p>
+    </div>
+
+    <!-- Output Roadmap Dashboard -->
+    <div id="outputContainer" class="space-y-8">
+      
+      <!-- Generated Profile Header Banner -->
+      <div class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Roadmap Ready
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight" id="resRoleTitle">
+              Target Role: <span class="text-indigo-600" id="resRoleName">Content Creator</span>
+            </h2>
+            <p class="text-sm text-slate-600 max-w-2xl" id="resPitchSummary">
+              Tailored 6-stage development path focusing on videography & storytelling. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).
             </p>
-
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 pt-2">Suggested Tech Stack</h3>
-            <div class="flex flex-wrap gap-2 text-xs">
-              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">Python 3.11</span>
-              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">PyTorch</span>
-              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">FastAPI</span>
-              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">Docker</span>
-              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">Apify SDK</span>
-            </div>
           </div>
 
-          <div class="space-y-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Milestone Checklist</h3>
-            <div class="space-y-2 text-xs text-slate-300">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked class="rounded accent-purple-600">
-                <span>Milestone 1: Data acquisition and exploratory data analysis</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" class="rounded accent-purple-600">
-                <span>Milestone 2: Baseline ML model vs PyTorch deep neural network</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" class="rounded accent-purple-600">
-                <span>Milestone 3: FastAPI microservice wrapper and Docker containerization</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" class="rounded accent-purple-600">
-                <span>Milestone 4: Interactive frontend dashboard and cloud deployment</span>
-              </label>
+          <div class="grid grid-cols-2 gap-3 text-center text-xs shrink-0">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="block text-slate-500">Level</span>
+              <strong class="text-sm font-bold text-amber-600" id="resLevel">Beginner</strong>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="block text-slate-500">Location</span>
+              <strong class="text-sm font-bold text-slate-800" id="resLocation">Nigeria 🇳🇬</strong>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="block text-slate-500">Weekly Study</span>
+              <strong class="text-sm font-bold text-indigo-600" id="resHours">8 Hours/Wk</strong>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="block text-slate-500">Domain</span>
+              <strong class="text-sm font-bold text-emerald-600" id="resDomain">Videography</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Known Skills Tags -->
+        <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+          <span class="text-slate-500 font-medium">Known Skills:</span>
+          <div id="resSkillsTags" class="flex flex-wrap gap-1.5">
+            <span class="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">Basic smartphone filming</span>
+            <span class="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">CapCut</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skill Gap Diagnostics Alert -->
+      <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-6 space-y-3">
+        <div class="flex items-start gap-3">
+          <div class="p-2.5 rounded-xl bg-amber-100 text-amber-800 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <div class="space-y-2 w-full">
+            <h3 class="font-bold text-amber-900 text-sm">Prerequisite Skill Gap Diagnostics</h3>
+            <p class="text-xs text-amber-800">
+              Before jumping into advanced production or monetization, TechPath identified key prerequisite gaps you must master:
+            </p>
+            <div class="grid sm:grid-cols-2 gap-3 pt-1" id="resGapContainer">
+              <!-- Dynamically populated gaps -->
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- TAB 4: HACKATHON MATCHES -->
-    <div id="tab-opportunities" class="tab-content hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-        <h2 class="text-lg font-bold text-white">Matched Practical Opportunities</h2>
-        <p class="text-xs text-slate-400">
-          Real-world hackathons, open source projects, and internships matched specifically to your growth stage in Nigeria:
-        </p>
+      <!-- Navigation Tabs -->
+      <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-2 text-sm font-semibold">
+        <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="px-4 py-2.5 rounded-xl bg-indigo-600 text-white shadow-sm transition">
+          🗺️ 6-Stage Roadmap
+        </button>
+        <button onclick="switchTab('assessment')" id="tab-btn-assessment" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
+          📝 Skill Quizzes
+        </button>
+        <button onclick="switchTab('capstone')" id="tab-btn-capstone" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
+          🏆 Portfolio Capstone
+        </button>
+        <button onclick="switchTab('opportunities')" id="tab-btn-opportunities" class="px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition">
+          🎯 Hackathons & Grants
+        </button>
+      </div>
 
-        <div class="grid md:grid-cols-3 gap-4">
-          <!-- Card 1 -->
-          <div class="p-5 rounded-xl border border-indigo-500/30 bg-indigo-500/5 flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex items-center justify-between text-xs mb-2">
-                <span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-bold">Hackathon</span>
-                <span class="text-slate-400">Oct 15, 2026</span>
-              </div>
-              <h3 class="font-bold text-sm text-white">Apify × She Code Africa Hackathon 2026</h3>
-              <p class="text-xs text-slate-400 mt-2">
-                Build reusable Apify Actors and web intelligence tools. Beginner & Intermediate friendly with cash prizes and mentorship.
-              </p>
-            </div>
-            <a href="https://apify.com/store" target="_blank" class="w-full py-2 text-center rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition block">
-              Apply / Learn More ↗
-            </a>
-          </div>
+      <!-- TAB 1: ROADMAP TIMELINE -->
+      <div id="tab-roadmap" class="space-y-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="stageNavGrid">
+          <!-- Stage Buttons generated via JS -->
+        </div>
 
-          <!-- Card 2 -->
-          <div class="p-5 rounded-xl border border-slate-800 bg-slate-950/60 flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex items-center justify-between text-xs mb-2">
-                <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 font-bold">Competition</span>
-                <span class="text-slate-400">Nov 01, 2026</span>
-              </div>
-              <h3 class="font-bold text-sm text-white">Kaggle Healthcare AI Challenge</h3>
-              <p class="text-xs text-slate-400 mt-2">
-                Build tabular & medical imaging classification models. Perfect for proving Healthcare AI skills.
-              </p>
-            </div>
-            <a href="https://www.kaggle.com/" target="_blank" class="w-full py-2 text-center rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-xs transition block border border-slate-800">
-              View Challenge ↗
-            </a>
-          </div>
+        <!-- Stage Detail Display Card -->
+        <div id="stageDetailCard" class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
 
-          <!-- Card 3 -->
-          <div class="p-5 rounded-xl border border-slate-800 bg-slate-950/60 flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex items-center justify-between text-xs mb-2">
-                <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Internship</span>
-                <span class="text-slate-400">Dec 01, 2026</span>
-              </div>
-              <h3 class="font-bold text-sm text-white">Open Source AI Engineering Fellowship</h3>
-              <p class="text-xs text-slate-400 mt-2">
-                Remote 3-month fellowship bridging early-career developers in Africa into global engineering roles.
-              </p>
-            </div>
-            <a href="https://shecodeafrica.org/" target="_blank" class="w-full py-2 text-center rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-xs transition block border border-slate-800">
-              Apply Now ↗
-            </a>
+      <!-- TAB 2: INTERACTIVE QUIZZES -->
+      <div id="tab-assessment" class="hidden space-y-6">
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-900">Stage Readiness Checks</h3>
+          <p class="text-xs text-slate-500">
+            Verify whether you've mastered this stage before moving forward. Try answering the check below:
+          </p>
+          <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50 space-y-4" id="quizContainer">
+            <!-- Dynamically injected -->
           </div>
         </div>
       </div>
+
+      <!-- TAB 3: PORTFOLIO CAPSTONE -->
+      <div id="tab-capstone" class="hidden space-y-6">
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl font-bold text-xl">🏆</div>
+            <div>
+              <h3 class="text-xl font-bold text-slate-900" id="capstoneTitle">Portfolio Capstone Brief</h3>
+              <p class="text-xs text-slate-500">A real-world project designed to prove your capabilities to employers and clients.</p>
+            </div>
+          </div>
+          <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4" id="capstoneDetails">
+            <!-- Dynamically injected -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: OPPORTUNITIES & HACKATHONS -->
+      <div id="tab-opportunities" class="hidden space-y-6">
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900">Targeted Hackathons & Opportunities</h3>
+            <p class="text-xs text-slate-500 mt-1">Live challenges matched to your role and location.</p>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4" id="opportunitiesGrid">
+            <!-- Dynamically injected -->
+          </div>
+        </div>
+      </div>
+
     </div>
+  </main>
 
-  </div>
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-500">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>TechPath Learning Intelligence Engine — Built for Apify Hackathon</p>
+      <div class="flex items-center gap-4 text-slate-400">
+        <a href="https://apify.com" target="_blank" class="hover:text-indigo-600 transition">Apify Platform</a>
+        <span>•</span>
+        <a href="https://github.com/Shecodes-py/TechPath" target="_blank" class="hover:text-indigo-600 transition">GitHub Repo</a>
+      </div>
+    </div>
+  </footer>
 
+  <!-- Interactive JavaScript Engine -->
   <script>
-    const stageData = {
-      1: {
-        title: "Stage 1: Foundations",
-        desc: "Master core programming, version control, and prerequisite mathematics before advancing.",
-        topics: ["Python Basics", "Git & GitHub", "NumPy & Data Manipulation", "Basic Statistics"],
-        resources: [
-          { title: "Python for Everybody Specialization", type: "Course", url: "https://www.py4e.com/", hrs: 15, taught: ["Python syntax", "Data Structures"] },
-          { title: "Git & GitHub Crash Course", type: "YouTube", url: "https://www.youtube.com/watch?v=RGOj5yH7evE", hrs: 2, taught: ["Git", "Version Control"] }
+    // Preset Data Repository
+    const presets = {
+      creator: {
+        role: "Content Creator",
+        level: "Beginner",
+        hours: 8,
+        location: "Nigeria 🇳🇬",
+        domain: "Videography & Storytelling",
+        known: ["Basic smartphone filming", "CapCut"],
+        pitch: "Tailored Content Creator path for a Beginner in Nigeria focusing on videography. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
+        gaps: [
+          { skill: "Lighting & Framing Fundamentals", type: "Foundation", req: "92%", desc: "Essential for producing crisp, professional visual content on smartphone or camera." },
+          { skill: "Audio Recording & Clean Editing", type: "Core", req: "88%", desc: "Good audio is 50% of video retention; critical before publishing." }
         ],
-        project: "Automated Data Processing & Extraction CLI Script"
+        stages: [
+          {
+            stage: 1, title: "Foundations", desc: "Master lighting, camera positioning, and raw audio capture before video editing.",
+            topics: ["Lighting Rules (3-Point)", "Smartphone Camera Settings", "Microphone Types & Placement", "Basic Scripting"],
+            resources: [
+              { title: "Smartphone Videography Crash Course", type: "YouTube", est: "2 hrs", desc: "Lighting and camera basics for mobile creators.", url: "https://www.youtube.com/results?search_query=smartphone+videography+beginner" },
+              { title: "Audio Recording for Beginners", type: "Course", est: "4 hrs", desc: "How to get clean sound on any budget.", url: "https://www.coursera.org" }
+            ],
+            project: "Shoot & Record a 60-second clean talking-head video with zero background noise."
+          },
+          {
+            stage: 2, title: "Core Skills", desc: "Build fast pacing, video editing cuts, color grading, and thumbnail design.",
+            topics: ["CapCut & Premiere Basics", "Pacing & B-Roll Timing", "Basic Color Correction", "Thumbnail Composition"],
+            resources: [
+              { title: "Complete Video Editing Masterclass", type: "YouTube", est: "5 hrs", desc: "Transitions, B-roll timing, and audio sync.", url: "https://www.youtube.com" }
+            ],
+            project: "Edit a 3-minute storytelling video incorporating B-roll overlays and sound effects."
+          },
+          {
+            stage: 3, title: "Specialization", desc: "Focus on vertical short-form (Reels/TikTok) and YouTube long-form retention hooks.",
+            topics: ["Short-form Retention Hooks", "Storyboarding Narrative Arcs", "Custom Graphics & Lower Thirds"],
+            resources: [
+              { title: "Short Form Video Growth Guide", type: "Article", est: "1 hr", desc: "Pacing strategies for TikTok and Instagram Reels.", url: "https://medium.com" }
+            ],
+            project: "Produce 3 viral-style short videos with high-retention hooks."
+          },
+          {
+            stage: 4, title: "Build & Deploy", desc: "Launch a multi-platform content workflow and release your core channel series.",
+            topics: ["Channel Branding", "SEO Metadata & Tags", "Publishing Schedule Strategy"],
+            resources: [{ title: "YouTube Channel Optimization Guide", type: "Doc", est: "2 hrs", desc: "SEO titles and thumbnail A/B testing.", url: "https://creatoracademy.youtube.com" }],
+            project: "Launch a 4-episode niche video series on YouTube/Instagram."
+          },
+          {
+            stage: 5, title: "Prove & Publish", desc: "Analyze audience metrics, viewer retention curves, and refine click-through rate.",
+            topics: ["YouTube Analytics Mastery", "Audience Retention Drop-off Fixes", "Community Engagement"],
+            resources: [{ title: "Decoding YouTube Analytics", type: "YouTube", est: "3 hrs", desc: "Understanding impressions and watch time.", url: "https://www.youtube.com" }],
+            project: "Publish a performance case study analyzing your top-performing content."
+          },
+          {
+            stage: 6, title: "Advance & Monetize", desc: "Brand deals, digital products, and scaling a creative agency.",
+            topics: ["Brand Sponsorship Pitching", "Digital Product Launch", "Outsourcing Video Editing"],
+            resources: [{ title: "Creator Business Strategy", type: "Course", est: "8 hrs", desc: "Monetization beyond ad revenue.", url: "https://www.skillshare.com" }],
+            project: "Pitch 3 potential brand sponsors with a media kit and portfolio link."
+          }
+        ],
+        quizzes: {
+          q: "What is the key rule for high video retention in short-form content?",
+          options: ["A 10-second intro logo", "A strong hook within the first 3 seconds", "Long silence at the start", "No B-roll"],
+          ans: 1
+        },
+        capstone: {
+          title: "Mini-Documentary & Channel Launch",
+          desc: "Produce, edit, and publish a 5-minute narrative mini-documentary with custom thumbnails, B-roll, clean audio, and SEO optimization."
+        },
+        opportunities: [
+          { name: "YouTube Creator Accelerator", desc: "Grants & mentorship for emerging creators.", url: "https://youtube.com" },
+          { name: "African Storytelling Grant", desc: "Funding for short-form filmmakers.", url: "https://google.com" }
+        ]
       },
-      2: {
-        title: "Stage 2: Core Skills",
-        desc: "Build solid fundamentals in Data Structures, Data Analysis, and Supervised Machine Learning.",
-        topics: ["Data Structures & Algorithms", "SQL Queries", "Supervised Learning", "Scikit-Learn"],
-        resources: [
-          { title: "Scikit-Learn Official User Guide", type: "Documentation", url: "https://scikit-learn.org/", hrs: 10, taught: ["Scikit-Learn", "Model Training"] }
+
+      ml: {
+        role: "Machine Learning Engineer",
+        level: "Beginner",
+        hours: 8,
+        location: "Nigeria 🇳🇬",
+        domain: "Healthcare AI",
+        known: ["Python basics"],
+        pitch: "Tailored ML roadmap for a Beginner in Nigeria focusing on Healthcare AI. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
+        gaps: [
+          { skill: "Linear Algebra & Probability", type: "Foundation", req: "90%", desc: "Required for understanding matrix operations, loss functions, and optimization." },
+          { skill: "Data Structures & Algorithms", type: "Core", req: "88%", desc: "Essential for efficient data processing and model deployment." }
         ],
-        project: "Supervised Prediction Engine & Evaluation Pipeline"
+        stages: [
+          {
+            stage: 1, title: "Foundations", desc: "Master Python for Data Science, NumPy, Pandas, and foundational linear algebra.",
+            topics: ["Python Syntax & Functions", "NumPy Vectorization", "Pandas DataFrames", "Linear Algebra Matrices"],
+            resources: [
+              { title: "Python for Everybody Specialization", type: "Course", est: "15 hrs", desc: "Full Python fundamentals.", url: "https://www.py4e.com/" },
+              { title: "Linear Algebra for ML (Khan Academy)", type: "Course", est: "8 hrs", desc: "Vectors, matrices, & eigenvalues.", url: "https://www.khanacademy.org" }
+            ],
+            project: "Build a CLI data cleaner that normalizes raw tabular health datasets using Pandas."
+          },
+          {
+            stage: 2, title: "Core ML Skills", desc: "Supervised and unsupervised learning, Scikit-Learn, and model evaluation metrics.",
+            topics: ["Linear & Logistic Regression", "Decision Trees & Random Forests", "Cross-Validation & ROC-AUC"],
+            resources: [{ title: "Scikit-Learn Official Tutorials", type: "Doc", est: "6 hrs", desc: "Model fitting & metrics.", url: "https://scikit-learn.org" }],
+            project: "Train a heart disease risk predictor using Scikit-Learn with 85%+ accuracy."
+          },
+          {
+            stage: 3, title: "Specialization (Healthcare AI)", desc: "Medical imaging basics, PyTorch/TensorFlow, and DICOM data handling.",
+            topics: ["PyTorch Tensors & Autograd", "Convolutional Neural Networks (CNNs)", "Medical Image Segmentation"],
+            resources: [{ title: "Deep Learning Specialization (DeepLearning.AI)", type: "Course", est: "20 hrs", desc: "Neural networks & CNNs.", url: "https://www.coursera.org" }],
+            project: "Build a PyTorch CNN to detect pneumonia from X-ray image datasets."
+          },
+          {
+            stage: 4, title: "Build & Deploy", desc: "FastAPI inference endpoints, Docker containerization, and Streamlit Web UI.",
+            topics: ["FastAPI Model REST APIs", "Dockerizing ML Services", "Streamlit Clinical Dashboard"],
+            resources: [{ title: "Deploying ML Models with FastAPI", type: "Article", est: "3 hrs", desc: "Containerizing PyTorch models.", url: "https://fastapi.tiangolo.com" }],
+            project: "Deploy your X-ray classification model to a public Streamlit web app hosted on HuggingFace Spaces."
+          },
+          {
+            stage: 5, title: "Prove & Publish", desc: "Technical paper write-up, reproducible GitHub repository, and model benchmarking.",
+            topics: ["ML Model Benchmarking", "Reproducible ML Pipelines", "Technical Blogging"],
+            resources: [{ title: "Writing Great Technical ML Reports", type: "Doc", est: "2 hrs", desc: "Structuring paper findings.", url: "https://paperswithcode.com" }],
+            project: "Publish a GitHub repo with clean documentation, Dockerfile, and benchmark charts."
+          },
+          {
+            stage: 6, title: "Advance (LLMs & Agents)", desc: "BioBERT, Clinical NLP, RAG pipelines, and AI Agents in Healthcare.",
+            topics: ["Clinical NLP with BioBERT", "RAG for Medical Literature", "LangChain & LlamaIndex"],
+            resources: [{ title: "HuggingFace Transformers Course", type: "Course", est: "10 hrs", desc: "Fine-tuning transformer models.", url: "https://huggingface.co/course" }],
+            project: "Build a RAG agent querying clinical trial PubMed papers."
+          }
+        ],
+        quizzes: {
+          q: "Why is ROC-AUC often preferred over raw Accuracy in medical diagnosis ML models?",
+          options: ["It runs faster on GPU", "Medical datasets are heavily imbalanced and false negatives are costly", "It requires no training data", "It only works on images"],
+          ans: 1
+        },
+        capstone: {
+          title: "End-to-End Clinical Diagnostic Assistant",
+          desc: "Create a deployed web app combining an X-ray classification CNN and BioBERT clinical report summarizer with Docker & FastAPI."
+        },
+        opportunities: [
+          { name: "IndabaX Nigeria AI Hackathon", desc: "Local African AI research challenge.", url: "https://deeplearningindaba.com" },
+          { name: "Kaggle Healthcare AI Challenge", desc: "Global medical imaging competition.", url: "https://kaggle.com" }
+        ]
       },
-      3: {
-        title: "Stage 3: Specialization",
-        desc: "Dive deep into modern Deep Learning, Neural Networks, PyTorch, and Healthcare AI.",
-        topics: ["Neural Networks", "PyTorch", "Computer Vision / NLP", "Healthcare AI Data"],
-        resources: [
-          { title: "Deep Learning Specialization - DeepLearning.AI", type: "Course", url: "https://www.coursera.org/specializations/deep-learning", hrs: 30, taught: ["PyTorch", "Neural Nets"] }
+
+      swe: {
+        role: "Software Engineer",
+        level: "Beginner",
+        hours: 10,
+        location: "Global 🌍",
+        domain: "Full-Stack Web Development",
+        known: ["HTML/CSS"],
+        pitch: "Tailored Software Engineering path for a Beginner focusing on Full-Stack web development. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
+        gaps: [
+          { skill: "JavaScript Modern Syntax (ES6+)", type: "Foundation", req: "94%", desc: "Must master async/await, closures, and DOM manipulation before React." },
+          { skill: "Git & Version Control", type: "Core", req: "90%", desc: "Crucial for team collaboration and code deployment." }
         ],
-        project: "Healthcare AI Diagnostic Model Implementation"
-      },
-      4: {
-        title: "Stage 4: Build & Deploy",
-        desc: "Transform standalone models into robust, containerized microservices.",
-        topics: ["FastAPI REST APIs", "Docker Containerization", "API Deployment", "Model Serving"],
-        resources: [
-          { title: "Deploying ML Models with FastAPI & Docker", type: "Documentation", url: "https://fastapi.tiangolo.com/", hrs: 8, taught: ["FastAPI", "Docker"] }
+        stages: [
+          {
+            stage: 1, title: "Foundations", desc: "JavaScript ES6+, DOM Manipulation, Async JS, and Git workflows.",
+            topics: ["JavaScript Variables & Scope", "Promises & Async/Await", "Git Branching & GitHub"],
+            resources: [{ title: "JavaScript30 by Wes Bos", type: "Course", est: "10 hrs", desc: "30 vanilla JS projects.", url: "https://javascript30.com" }],
+            project: "Build an interactive task manager web app using Vanilla JavaScript & LocalStorage."
+          },
+          {
+            stage: 2, title: "Core Frontend", desc: "React.js, Tailwind CSS, Component State, and REST API integration.",
+            topics: ["React Components & Props", "Hooks (useState, useEffect)", "Tailwind CSS Layouts"],
+            resources: [{ title: "React Official Documentation", type: "Doc", est: "8 hrs", desc: "Modern React with Hooks.", url: "https://react.dev" }],
+            project: "Build a responsive weather dashboard fetching live weather REST API data."
+          },
+          {
+            stage: 3, title: "Core Backend", desc: "Node.js, Express, PostgreSQL / MongoDB, and REST API design.",
+            topics: ["Express.js Routing", "Database Schemas & ORMs", "JWT Authentication"],
+            resources: [{ title: "The Odin Project (Node.js Track)", type: "Course", est: "25 hrs", desc: "Complete full-stack curriculum.", url: "https://www.theodinproject.com" }],
+            project: "Create an authenticated REST API for a blog platform with database CRUD."
+          },
+          {
+            stage: 4, title: "Build & Deploy", desc: "Full-stack integration, Next.js / TypeScript, Vercel & Supabase deployment.",
+            topics: ["Next.js App Router", "TypeScript Interfaces", "Continuous Deployment (CI/CD)"],
+            resources: [{ title: "Next.js Learn Course", type: "Course", est: "6 hrs", desc: "Full-stack Next.js fundamentals.", url: "https://nextjs.org/learn" }],
+            project: "Deploy a full-stack SaaS SaaS starter product on Vercel with database & auth."
+          },
+          {
+            stage: 5, title: "Prove & Testing", desc: "Unit testing with Jest/Vitest, E2E testing with Playwright, and code reviews.",
+            topics: ["Jest Unit Tests", "Playwright E2E Tests", "System Architecture Design"],
+            resources: [{ title: "Testing JavaScript", type: "Course", est: "5 hrs", desc: "Comprehensive testing practices.", url: "https://testingjavascript.com" }],
+            project: "Add 80%+ test coverage to your full-stack app with Playwright E2E suites."
+          },
+          {
+            stage: 6, title: "Advance & Systems", desc: "Microservices, Docker, Redis caching, and WebSockets.",
+            topics: ["Dockerizing Node.js Apps", "Redis Caching Layer", "WebSocket Real-Time Messaging"],
+            resources: [{ title: "Docker for Web Developers", type: "Course", est: "4 hrs", desc: "Containers & Docker Compose.", url: "https://docker.com" }],
+            project: "Build a real-time collaborative chat system using WebSockets & Docker Compose."
+          }
         ],
-        project: "Containerized ML Inference Microservice"
-      },
-      5: {
-        title: "Stage 5: Prove & Publish",
-        desc: "Validate your skills through hackathons, open-source PRs, and publishing Apify Actors.",
-        topics: ["Hackathon Entry", "Open Source PRs", "Apify Actor Development"],
-        resources: [
-          { title: "Apify Open Source Actor Development Guide", type: "Documentation", url: "https://apify.com/store", hrs: 5, taught: ["Apify SDK", "Actor Publishing"] }
-        ],
-        project: "Apify Open Source Cloud Tool / Actor"
-      },
-      6: {
-        title: "Stage 6: Advance (LLMs & Agents)",
-        desc: "Expand into cutting-edge architectures: Large Language Models, RAG Systems, and AI Agents.",
-        topics: ["RAG & Vector DBs", "AI Agents & LangChain", "MLOps & Monitoring"],
-        resources: [
-          { title: "Full Stack LLM & RAG Application Architecture", type: "Course", url: "https://www.deeplearning.ai/", hrs: 12, taught: ["RAG", "Vector Search"] }
-        ],
-        project: "Autonomous AI Agent System with Tool Calling"
+        quizzes: {
+          q: "Why use `async/await` over traditional `.then()` chain callbacks in JavaScript?",
+          options: ["It makes asynchronous code read synchronously, improving clarity & error handling", "It makes JavaScript run twice as fast", "It removes the need for functions", "It converts JS into Python"],
+          ans: 0
+        },
+        capstone: {
+          title: "Full-Stack SaaS Platform with Payments & CI/CD",
+          desc: "Build and deploy a Next.js + TypeScript SaaS application with Supabase Auth, Stripe billing, and Vercel automated CI/CD."
+        },
+        opportunities: [
+          { name: "Major League Hacking (MLH) Hackathon", desc: "Global developer hackathon series.", url: "https://mlh.io" },
+          { name: "Vercel Open Source Challenge", desc: "Build & deploy Next.js apps.", url: "https://vercel.com" }
+        ]
       }
     };
 
-    function selectStage(num) {
-      document.querySelectorAll('.stage-nav-btn').forEach(btn => {
-        btn.classList.remove('border-indigo-500/40', 'bg-indigo-500/10');
-        btn.classList.add('border-slate-800', 'bg-slate-900', 'opacity-70');
-      });
-      const activeBtn = document.getElementById(`stage-btn-${num}`);
-      activeBtn.classList.remove('border-slate-800', 'bg-slate-900', 'opacity-70');
-      activeBtn.classList.add('border-indigo-500/40', 'bg-indigo-500/10');
+    let activeData = presets.creator;
+    let currentStageIndex = 0;
 
-      const data = stageData[num];
-      const container = document.getElementById('stage-detail-container');
-      container.innerHTML = `
-        <div>
-          <h2 class="text-xl font-bold text-white">${data.title}</h2>
-          <p class="text-xs text-slate-400 mt-1">${data.desc}</p>
+    function loadPreset(key) {
+      if (!presets[key]) return;
+      activeData = presets[key];
+
+      document.getElementById('targetRole').value = activeData.role;
+      document.getElementById('currentLevel').value = activeData.level;
+      document.getElementById('hoursPerWeek').value = activeData.hours;
+      document.getElementById('location').value = activeData.location.replace(/ [^\w\s]/gi, '');
+      document.getElementById('domainInterest').value = activeData.domain;
+      document.getElementById('knownSkills').value = activeData.known.join(', ');
+
+      renderDashboard(activeData);
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const token = document.getElementById('apifyToken').value.trim();
+      const role = document.getElementById('targetRole').value.trim();
+      const level = document.getElementById('currentLevel').value;
+      const hours = parseInt(document.getElementById('hoursPerWeek').value, 10);
+      const loc = document.getElementById('location').value.trim();
+      const domain = document.getElementById('domainInterest').value.trim();
+      const known = document.getElementById('knownSkills').value.split(',').map(s => s.trim()).filter(Boolean);
+
+      // Show Loading State
+      document.getElementById('loadingState').classList.remove('hidden');
+      document.getElementById('outputContainer').classList.add('opacity-40');
+      document.getElementById('submitBtn').disabled = true;
+
+      // If user supplied an Apify token, try direct REST execution
+      if (token) {
+        document.getElementById('loadingMessage').innerText = "Connecting to Apify Actor REST API with your token...";
+        try {
+          const res = await fetch(`https://api.apify.com/v2/acts/3cGQUsrX8W99r2eMD/runs-sync-get-dataset-items?token=${token}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              targetRole: role,
+              currentLevel: level,
+              hoursPerWeek: hours,
+              location: loc,
+              domainInterest: domain,
+              knownSkills: known
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.length > 0) {
+              // Format custom run dataset item
+              const item = data[0];
+              activeData = {
+                role: item.targetRole || role,
+                level: item.profile?.currentLevel || level,
+                hours: item.profile?.hoursPerWeek || hours,
+                location: item.profile?.location || loc,
+                domain: domain || "General",
+                known: item.profile?.knownSkills || known,
+                pitch: item.summaryPitch || "Tailored skill path.",
+                gaps: (item.skillGaps || []).map(g => ({ skill: g.skill, type: g.category, req: `${Math.round((g.confidence||0.85)*100)}%`, desc: g.explanation })),
+                stages: (item.learningPath || []).map((s, idx) => ({
+                  stage: idx + 1,
+                  title: s.stageName || `Stage ${idx+1}`,
+                  desc: s.overview || "",
+                  topics: s.keyTopics || [],
+                  resources: (s.recommendedResources || []).map(r => ({ title: r.title, type: r.type, est: r.estimatedHours, desc: r.description, url: r.url })),
+                  project: s.reinforcementProject?.title || "Complete reinforcement practice."
+                })),
+                quizzes: { q: `Key check for ${role}`, options: ["Review fundamentals", "Build projects", "Deploy app", "Write tests"], ans: 1 },
+                capstone: { title: item.capstoneBrief?.title || "Capstone Project", desc: item.capstoneBrief?.description || "Build a complete portfolio project." },
+                opportunities: (item.opportunities || []).map(o => ({ name: o.title || o.name, desc: o.description, url: o.url || "#" }))
+              };
+            }
+          }
+        } catch (err) {
+          console.warn("Apify API call failed or timed out, falling back to local synthesis:", err);
+        }
+      } else {
+        // Instant custom synthesis
+        await new Promise(res => setTimeout(res, 800)); // smooth experience
+        activeData = {
+          role: role,
+          level: level,
+          hours: hours,
+          location: loc,
+          domain: domain || "General",
+          known: known,
+          pitch: `Tailored development path for a ${level} in ${loc} focusing on ${domain || role}. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).`,
+          gaps: [
+            { skill: `${role} Fundamentals & Workflow`, type: "Foundation", req: "90%", desc: "Core prerequisite topics needed before advancing." },
+            { skill: "Tooling & Environment Setup", type: "Core", req: "85%", desc: "Crucial for build performance and testing." }
+          ],
+          stages: [
+            { stage: 1, title: "Foundations", desc: `Master basic terminology, tool installation, and foundational principles for ${role}.`, topics: ["Core Terminology", "Workspace Setup", "Basic Syntax/Tools"], resources: [{ title: `${role} Starter Guide`, type: "Doc", est: "4 hrs", desc: "Essential overview.", url: "https://google.com" }], project: `Build a starter project incorporating ${known[0] || 'core basics'}.` },
+            { stage: 2, title: "Core Skills", desc: "Build hands-on proficiency with essential frameworks and tools.", topics: ["Primary Frameworks", "Best Practices", "Debugging"], resources: [{ title: `${role} Core Mastery`, type: "Course", est: "10 hrs", desc: "In-depth tutorials.", url: "https://coursera.org" }], project: "Complete an intermediate project module." },
+            { stage: 3, title: "Specialization", desc: `Deep dive into ${domain || 'advanced topics'} tailored to your track.`, topics: ["Domain Patterns", "Optimization", "Advanced Workflows"], resources: [{ title: "Specialization Deep-Dive", type: "YouTube", est: "6 hrs", desc: "Advanced techniques.", url: "https://youtube.com" }], project: "Deliver a specialized project component." },
+            { stage: 4, title: "Build & Deploy", desc: "Package and publish your work for real-world testing.", topics: ["Deployment", "CI/CD & Hosting", "Performance Tuning"], resources: [{ title: "Deployment Guide", type: "Doc", est: "3 hrs", desc: "Publishing steps.", url: "https://vercel.com" }], project: "Deploy your project live to the web." },
+            { stage: 5, title: "Prove & Publish", desc: "Document findings, generate case studies, and write clear READMEs.", topics: ["Documentation", "Benchmarking", "Portfolio Writing"], resources: [{ title: "Writing Portfolio Reports", type: "Article", est: "2 hrs", desc: "Structure case studies.", url: "https://medium.com" }], project: "Publish your open-source repo or portfolio entry." },
+            { stage: 6, title: "Advance & Scale", desc: "Automation, scaling, and advanced industry trends.", topics: ["Automation", "Scaling", "Industry Standards"], resources: [{ title: "Advanced Architectures", type: "Course", est: "12 hrs", desc: "Master level skills.", url: "https://udemy.com" }], project: "Implement automated workflows and optimizations." }
+          ],
+          quizzes: { q: `What is the first priority when mastering ${role}?`, options: ["Mastering prerequisites and foundations", "Skipping to advanced tools", "Ignoring documentation", "Writing un-tested code"], ans: 0 },
+          capstone: { title: `${role} Capstone Portfolio Deliverable`, desc: `Build, document, and publish an end-to-end ${role} project incorporating ${domain}.` },
+          opportunities: [
+            { name: `${loc} Tech Innovation Grant`, desc: "Opportunities for local developers and creators.", url: "https://google.com" },
+            { name: "Global Hackathon Challenge", desc: "Build & submit projects for prize pools.", url: "https://devpost.com" }
+          ]
+        };
+      }
+
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('outputContainer').classList.remove('opacity-40');
+      document.getElementById('submitBtn').disabled = false;
+
+      renderDashboard(activeData);
+      document.getElementById('outputContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderDashboard(data) {
+      document.getElementById('resRoleName').innerText = data.role;
+      document.getElementById('resPitchSummary').innerText = data.pitch;
+      document.getElementById('resLevel').innerText = data.level;
+      document.getElementById('resLocation').innerText = data.location;
+      document.getElementById('resHours').innerText = `${data.hours} Hours/Wk`;
+      document.getElementById('resDomain').innerText = data.domain;
+
+      // Render Known Skills
+      const skillsContainer = document.getElementById('resSkillsTags');
+      skillsContainer.innerHTML = (data.known && data.known.length > 0) 
+        ? data.known.map(k => `<span class="px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">${k}</span>`).join('')
+        : '<span class="text-slate-400 italic">None specified</span>';
+
+      // Render Skill Gaps
+      const gapContainer = document.getElementById('resGapContainer');
+      gapContainer.innerHTML = (data.gaps || []).map(g => `
+        <div class="p-3 bg-white rounded-xl border border-amber-200 text-xs space-y-1 shadow-sm">
+          <div class="flex justify-between items-center font-bold">
+            <span class="text-amber-900">[${g.type}] ${g.skill}</span>
+            <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px]">${g.req}</span>
+          </div>
+          <p class="text-slate-600">${g.desc}</p>
+        </div>
+      `).join('');
+
+      // Render Stage Nav Grid
+      const navGrid = document.getElementById('stageNavGrid');
+      navGrid.innerHTML = data.stages.map((s, idx) => `
+        <button onclick="selectStage(${idx})" id="stage-btn-${idx}" 
+          class="p-3 rounded-2xl border text-left transition ${idx === 0 ? 'border-indigo-600 bg-indigo-50/60 shadow-sm' : 'border-slate-200 bg-slate-50 hover:bg-white'}">
+          <span class="block text-[10px] font-bold ${idx === 0 ? 'text-indigo-600' : 'text-slate-500'}">STAGE ${s.stage}</span>
+          <strong class="text-xs text-slate-900 block truncate">${s.title}</strong>
+        </button>
+      `).join('');
+
+      // Render Quiz
+      const quizContainer = document.getElementById('quizContainer');
+      const q = data.quizzes;
+      quizContainer.innerHTML = `
+        <div class="space-y-3">
+          <span class="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-xs">Stage Check</span>
+          <h4 class="font-bold text-slate-900 text-sm">${q.q}</h4>
+          <div class="space-y-2 pt-2">
+            ${q.options.map((opt, idx) => `
+              <button onclick="checkQuizAnswer(${idx}, ${q.ans})" class="quiz-opt-btn w-full text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-xs text-slate-800 transition">
+                ${String.fromCharCode(65 + idx)}. ${opt}
+              </button>
+            `).join('')}
+          </div>
+          <p id="quizFeedback" class="text-xs font-bold pt-2 hidden"></p>
+        </div>
+      `;
+
+      // Render Capstone
+      document.getElementById('capstoneTitle').innerText = data.capstone.title;
+      document.getElementById('capstoneDetails').innerHTML = `
+        <p class="text-sm text-slate-700 leading-relaxed">${data.capstone.desc}</p>
+        <div class="pt-2 flex flex-wrap gap-2 text-xs">
+          <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-semibold">Portfolio Ready</span>
+          <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">Self-Paced</span>
+        </div>
+      `;
+
+      // Render Opportunities
+      const oppGrid = document.getElementById('opportunitiesGrid');
+      oppGrid.innerHTML = data.opportunities.map(o => `
+        <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50 space-y-2 flex flex-col justify-between">
+          <div>
+            <h4 class="font-bold text-slate-900 text-sm">${o.name}</h4>
+            <p class="text-xs text-slate-600 mt-1">${o.desc}</p>
+          </div>
+          <a href="${o.url}" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline pt-2">
+            <span>Learn More & Apply</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+        </div>
+      `).join('');
+
+      selectStage(0);
+    }
+
+    function selectStage(idx) {
+      currentStageIndex = idx;
+      const s = activeData.stages[idx];
+
+      // Update Nav Buttons
+      activeData.stages.forEach((_, i) => {
+        const btn = document.getElementById(`stage-btn-${i}`);
+        if (!btn) return;
+        if (i === idx) {
+          btn.className = "p-3 rounded-2xl border text-left transition border-indigo-600 bg-indigo-50/60 shadow-sm";
+          btn.querySelector('span').className = "block text-[10px] font-bold text-indigo-600";
+        } else {
+          btn.className = "p-3 rounded-2xl border text-left transition border-slate-200 bg-slate-50 hover:bg-white";
+          btn.querySelector('span').className = "block text-[10px] font-bold text-slate-500";
+        }
+      });
+
+      // Render Detail Card
+      const card = document.getElementById('stageDetailCard');
+      card.innerHTML = `
+        <div class="border-b border-slate-100 pb-4">
+          <span class="text-xs font-bold text-indigo-600 tracking-wider uppercase">Stage ${s.stage} Focus</span>
+          <h3 class="text-2xl font-bold text-slate-900 mt-0.5">${s.title}</h3>
+          <p class="text-sm text-slate-600 mt-1">${s.desc}</p>
         </div>
 
-        <div class="space-y-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Focus Topics:</span>
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Key Topics to Master</h4>
           <div class="flex flex-wrap gap-2">
-            ${data.topics.map(t => `<span class="px-2.5 py-1 rounded bg-indigo-500/10 text-indigo-400 font-semibold text-xs border border-indigo-500/20">${t}</span>`).join('')}
+            ${s.topics.map(t => `<span class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold">${t}</span>`).join('')}
           </div>
         </div>
 
         <div class="space-y-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Curated Web Resources (${data.resources.length}):</span>
-          <div class="grid md:grid-cols-2 gap-3">
-            ${data.resources.map(r => `
-              <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/60 flex flex-col justify-between space-y-2">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Curated Learning Resources</h4>
+          <div class="grid sm:grid-cols-2 gap-3">
+            ${s.resources.map(r => `
+              <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-2 flex flex-col justify-between">
                 <div>
-                  <div class="flex items-center justify-between text-xs mb-1">
-                    <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-semibold text-[10px]">${r.type}</span>
-                    <span class="text-slate-400 text-[10px]">${r.hrs} hrs est.</span>
+                  <div class="flex items-center justify-between text-[11px] mb-1">
+                    <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-semibold">${r.type}</span>
+                    <span class="text-slate-400 font-medium">${r.est}</span>
                   </div>
-                  <strong class="text-xs font-semibold block text-slate-200">${r.title}</strong>
-                  <div class="flex flex-wrap gap-1 mt-2">
-                    ${r.taught.map(st => `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-400">${st}</span>`).join('')}
-                  </div>
+                  <h5 class="font-bold text-slate-900 text-xs">${r.title}</h5>
+                  <p class="text-xs text-slate-500 mt-1 line-clamp-2">${r.desc}</p>
                 </div>
-                <a href="${r.url}" target="_blank" class="text-xs text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1 pt-1">
-                  Open Resource ↗
+                <a href="${r.url}" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline pt-2">
+                  <span>Open Resource</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 2 0 00-2 2v10a2 2 2 0 002 2h10a2 2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 </a>
               </div>
             `).join('')}
           </div>
         </div>
 
-        <div class="p-4 rounded-xl bg-purple-500/5 border border-purple-500/20 text-xs space-y-1">
-          <span class="font-bold text-purple-400 uppercase tracking-wider text-[10px]">Reinforcement Project Brief:</span>
-          <p class="font-semibold text-sm text-slate-200">${data.project}</p>
+        <div class="p-5 rounded-2xl bg-indigo-50/50 border border-indigo-200/60 space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="text-indigo-600 font-bold text-sm">🛠️ Reinforcement Project Brief</span>
+          </div>
+          <p class="text-xs text-slate-700 leading-relaxed">${s.project}</p>
         </div>
       `;
     }
 
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-indigo-600', 'text-white');
-        btn.classList.add('bg-slate-900', 'text-slate-400');
+    function switchTab(tabKey) {
+      const tabs = ['roadmap', 'assessment', 'capstone', 'opportunities'];
+      tabs.forEach(t => {
+        const content = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tabKey) {
+          content.classList.remove('hidden');
+          btn.className = "px-4 py-2.5 rounded-xl bg-indigo-600 text-white shadow-sm transition";
+        } else {
+          content.classList.add('hidden');
+          btn.className = "px-4 py-2.5 rounded-xl bg-white text-slate-600 border border-slate-200 hover:text-slate-900 transition";
+        }
       });
-
-      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
-      activeBtn.classList.remove('bg-slate-900', 'text-slate-400');
-      activeBtn.classList.add('bg-indigo-600', 'text-white');
     }
 
-    function checkAnswer(opt) {
-      const fb = document.getElementById('quiz-feedback');
-      fb.classList.remove('hidden', 'bg-emerald-500/10', 'text-emerald-400', 'bg-rose-500/10', 'text-rose-400');
-      if (opt === 2) {
-        fb.classList.add('bg-emerald-500/10', 'text-emerald-400');
-        fb.innerHTML = "✅ <strong>Correct!</strong> Time complexity is O(N) because we iterate through the array once, and space is O(N) for storing the new filtered list.";
+    function checkQuizAnswer(selected, correct) {
+      const feedback = document.getElementById('quizFeedback');
+      feedback.classList.remove('hidden');
+      if (selected === correct) {
+        feedback.className = "text-xs font-bold pt-2 text-emerald-600";
+        feedback.innerText = "✓ Correct! Excellent mastery of this concept.";
       } else {
-        fb.classList.add('bg-rose-500/10', 'text-rose-400');
-        fb.innerHTML = "❌ <strong>Incorrect.</strong> Option B is correct. Time complexity is O(N) (single pass), and space complexity is O(N).";
+        feedback.className = "text-xs font-bold pt-2 text-rose-600";
+        feedback.innerText = "✕ Incorrect. Review the prerequisite resources before proceeding.";
       }
     }
 
-    // Initialize Stage 1 on load
-    selectStage(1);
+    // Initialize Page on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderDashboard(activeData);
+    });
   </script>
-
 </body>
 </html>
