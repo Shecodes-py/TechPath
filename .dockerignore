@@ -1,0 +1,10 @@
+.venv
+.env
+.git
+__pycache__
+*.pyc
+storage
+*_output.json
+demo_output.json
+index.html
+TEAM_WALKTHROUGH.md

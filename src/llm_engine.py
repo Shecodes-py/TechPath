@@ -2,19 +2,42 @@ import os
 import json
 import logging
 from typing import Dict, Any, Optional
-from google import genai
-from google.genai import types
 
+from src.llm_clients import call_claude, call_gemini_latest, parse_llm_json
 from src.schemas import LearnerInput
 
 logger = logging.getLogger("TechPath.LLMEngine")
+
+_PLACEHOLDER_KEYS = {
+    "",
+    "your_gemini_api_key_here",
+    "your_anthropic_api_key_here",
+}
+
+
+def _usable_key(key: Optional[str]) -> Optional[str]:
+    if not key:
+        return None
+    trimmed = key.strip()
+    if trimmed in _PLACEHOLDER_KEYS or trimmed.startswith("your_"):
+        return None
+    return trimmed
+
+
+def _trim_web_context(web_resources: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    if not web_resources:
+        return {"search_results": [], "video_results": []}
+    return {
+        "search_results": web_resources.get("search_results", [])[:15],
+        "video_results": web_resources.get("video_results", [])[:10],
+    }
 
 
 class LLMEngine:
     """
     LLM Intelligence Engine powered by Google Gemini API (Free Tier ready).
     Generates structured learning graph, gap analysis, assessments, projects, 
-    and opportunity matches. Includes built-in fallback engine when API keys are absent.
+    and opportunity matches. Includes built-in multi-domain fallback engine.
     """
 
     SYSTEM_PROMPT = """
@@ -22,7 +45,7 @@ You are TechPath Learning Intelligence, an expert AI career architect and curric
 Your mission: Turn scattered technical learning resources into a structured, dependency-aware development path from beginner to job-ready.
 
 CORE DESIGN PRINCIPLE: Prerequisites before trends.
-Never recommend advanced or trending topics (such as LLMs, RAG, AI Agents, or MLOps) unless foundational prerequisites (Python/programming, Data Structures, Linear Algebra/Stats, and basic ML algorithms) are explicitly present in the learner's known skills or assigned to earlier stages.
+Never recommend advanced topics unless foundational prerequisites (core skills, tools, and theory) are explicitly present in the learner's known skills or assigned to earlier stages.
 
 OUTPUT STRUCTURE REQUIRED (JSON):
 Return a valid JSON object with the following top-level keys:
@@ -42,475 +65,1223 @@ Return a valid JSON object with the following top-level keys:
 - capstone (object: {title, domainTarget, problemStatement, objectives, skillsTested, suggestedStack, deliverables, milestones, evaluationCriteria, extensionIdeas})
 - opportunities (array of objects: {title, organizer, opportunityType, deadline, eligibility, remoteStatus, requiredSkills, difficultyEstimate, applicationUrl, sourceUrl, matchReason})
 - sources (array of URLs used or referenced)
+
+RESOURCE RULES:
+- Prefer REAL scraped search results and YouTube videos supplied in the user prompt.
+- When those lists are non-empty, do not invent URLs; only cite URLs that appear there.
+- If scraped lists are empty, you may use well-known canonical documentation URLs.
+- Return ONLY valid JSON — no markdown fences, no commentary.
+- Skip or shorten stages that the learner already covered in knownSkills.
 """
 
-    def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        self.client = None
-        if self.api_key:
-            try:
-                self.client = genai.Client(api_key=self.api_key)
-                logger.info("Initialized Gemini Client successfully.")
-            except Exception as e:
-                logger.warning(f"Could not initialize Gemini client: {e}. Will use fallback engine.")
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        anthropic_key: Optional[str] = None,
+        provider: str = "auto",
+    ):
+        self.gemini_key = _usable_key(
+            api_key or os.getenv("GEMINI_API_KEY") or os.getenv("LLM_API_KEY")
+        )
+        self.anthropic_key = _usable_key(
+            anthropic_key or os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")
+        )
+        self.provider = (provider or "auto").strip().lower()
 
-    def generate_intelligence(self, learner: LearnerInput, web_resources: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    async def generate_intelligence(
+        self, learner: LearnerInput, web_resources: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Generate structured learning path, assessments, capstone, and opportunities.
         """
-        if self.client:
+        prompt = self._build_user_prompt(learner, web_resources)
+        last_error: Optional[Exception] = None
+
+        for backend in self._backends():
             try:
-                return self._call_gemini(learner, web_resources)
+                if backend == "gemini":
+                    logger.info("Invoking Gemini model: gemini-flash-latest")
+                    raw = await call_gemini_latest(self.SYSTEM_PROMPT + "\n\n" + prompt, self.gemini_key)
+                else:
+                    logger.info("Invoking Claude model: claude-sonnet-4-5")
+                    raw = await call_claude(prompt, self.anthropic_key, system=self.SYSTEM_PROMPT)
+                return parse_llm_json(raw)
             except Exception as e:
-                logger.error(f"Gemini API call failed: {e}. Switching to deterministic fallback engine.")
-                return self._fallback_generation(learner, web_resources)
+                logger.warning(f"{backend} generation failed: {e}")
+                last_error = e
+
+        if last_error:
+            logger.error(f"All LLM backends failed ({last_error}). Switching to fallback engine.")
         else:
-            logger.info("No Gemini API key supplied. Executing deterministic TechPath Intelligence engine.")
-            return self._fallback_generation(learner, web_resources)
+            logger.info("No LLM API key supplied. Executing multi-domain TechPath fallback engine.")
+        return self._fallback_generation(learner, web_resources)
 
-    def _call_gemini(self, learner: LearnerInput, web_resources: Optional[Dict[str, Any]]) -> Dict[str, Any]:
-        user_prompt = f"""
-Analyze this learner profile and generate their structured TechPath:
+    def _backends(self) -> list[str]:
+        provider = self.provider
+        ordered: list[str] = []
+        if provider in ("gemini", "auto") and self.gemini_key:
+            ordered.append("gemini")
+        if provider in ("claude", "anthropic", "auto") and self.anthropic_key:
+            ordered.append("claude")
+        if provider in ("claude", "anthropic") and self.gemini_key and "gemini" not in ordered:
+            ordered.append("gemini")
+        return ordered
 
-Learner Profile:
-- Target Goal/Role: {learner.goal}
-- Current Level: {learner.currentLevel}
-- Known Skills: {json.dumps(learner.knownSkills)}
-- Hours per Week: {learner.hoursPerWeek}
-- Location: {learner.location}
-- Domain/Niche Interests: {json.dumps(learner.interests)}
-- Learning Preferences: {json.dumps(learner.learningPreferences)}
-- Roadmap Depth: {learner.depth}
+    def _build_user_prompt(
+        self, learner: LearnerInput, web_resources: Optional[Dict[str, Any]]
+    ) -> str:
+        trimmed = _trim_web_context(web_resources)
+        return f"""
+Analyze this learner profile and generate their structured TechPath.
 
-Scraped / Discovered Web Context:
-{json.dumps(web_resources) if web_resources else "Standard curated technical web search index available."}
+Learner profile:
+{json.dumps({
+    "goal": learner.goal,
+    "currentLevel": learner.currentLevel,
+    "knownSkills": learner.knownSkills,
+    "hoursPerWeek": learner.hoursPerWeek,
+    "location": learner.location,
+    "interests": learner.interests,
+    "learningPreferences": learner.learningPreferences,
+    "depth": learner.depth,
+})}
+
+Search results found on the web:
+{json.dumps(trimmed.get("search_results", []))}
+
+YouTube videos found:
+{json.dumps(trimmed.get("video_results", []))}
 
 Generate the complete JSON response matching the required structure.
+Ensure topics and projects match the role '{learner.goal}' specifically.
 """
-        models_to_try = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-flash", "gemini-pro"]
-        last_exception = None
-
-        for model in models_to_try:
-            try:
-                logger.info(f"Invoking Gemini model: {model}")
-                response = self.client.models.generate_content(
-                    model=model,
-                    contents=self.SYSTEM_PROMPT + "\n\n" + user_prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        temperature=0.2,
-                    )
-                )
-                text = response.text
-                return json.loads(text)
-            except Exception as e:
-                logger.warning(f"Model {model} failed: {e}")
-                last_exception = e
-
-        raise last_exception or RuntimeError("All Gemini models failed.")
 
     def _fallback_generation(self, learner: LearnerInput, web_resources: Optional[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        High-quality, rule-driven deterministic generator aligned with PRD specifications.
+        Multi-domain deterministic generator matching specific career tracks.
         """
+        goal_lower = learner.goal.lower()
+        interests = learner.interests or ["videography"]
+        niche = interests[0] if interests else "Media Production"
+        location = learner.location or "Nigeria"
+
+        # Check domain category
+        is_creator = any(k in goal_lower for k in ["content", "creator", "video", "media", "marketing", "film", "youtube", "design"])
+        is_software = any(k in goal_lower for k in ["software", "backend", "frontend", "fullstack", "web", "developer"])
+        
+        if is_creator:
+            return self._build_content_creator_path(learner, niche, location)
+        elif is_software:
+            return self._build_software_engineer_path(learner, niche, location)
+        else:
+            return self._build_machine_learning_path(learner, niche, location)
+
+    def _build_content_creator_path(self, learner: LearnerInput, niche: str, location: str) -> Dict[str, Any]:
         goal = learner.goal
-        known = set([s.lower() for s in learner.knownSkills])
-        interests = learner.interests or ["Healthcare AI"]
-        niche = interests[0] if interests else "AI Applications"
-
-        # 1. Skill Gaps
-        skill_gaps = []
-        if "python" not in str(known) and "programming" not in str(known):
-            skill_gaps.append({
-                "skill": "Python Programming & Fundamentals",
-                "category": "Foundation",
-                "isRequiredFor": "Data Structures, ML, and AI Engineering",
-                "confidence": 0.95,
-                "explanation": "Essential foundation for writing clean, efficient technical code."
-            })
-        if "math" not in str(known) and "linear algebra" not in str(known):
-            skill_gaps.append({
-                "skill": "Linear Algebra & Statistics for ML",
-                "category": "Foundation",
-                "isRequiredFor": "Supervised Learning, Optimization & Model Evaluation",
-                "confidence": 0.90,
-                "explanation": "Prerequisite for understanding model weights, loss functions, and probability."
-            })
-        if "dsa" not in str(known) and "data structures" not in str(known):
-            skill_gaps.append({
-                "skill": "Data Structures & Algorithms",
-                "category": "Core",
-                "isRequiredFor": "System Efficiency & Coding Interviews",
-                "confidence": 0.88,
-                "explanation": "Critical for writing scalable algorithms and building production systems."
-            })
-
-        # 2. Roadmap Stages
-        roadmap = [
-            {
-                "stageNumber": 1,
-                "stageName": "1. Foundations",
-                "description": "Master core programming, version control, and prerequisite mathematics.",
-                "focusTopics": ["Python Basics", "Git & GitHub", "NumPy & Data Manipulation", "Basic Statistics"],
-                "prerequisitesRequired": ["None"],
-                "resources": [
-                    {
-                        "title": "Python for Everybody Specialization",
-                        "url": "https://www.py4e.com/",
-                        "resourceType": "course",
-                        "difficulty": "Beginner",
-                        "estimatedHours": 15,
-                        "skillsTaught": ["Python syntax", "Data Structures", "Web Scraping"],
-                        "prerequisites": [],
-                        "summary": "Comprehensive beginner introduction to Python programming.",
-                        "isFree": True
-                    },
-                    {
-                        "title": "Git and GitHub for Beginners - Crash Course",
-                        "url": "https://www.youtube.com/watch?v=RGOj5yH7evE",
-                        "resourceType": "youtube",
-                        "difficulty": "Beginner",
-                        "estimatedHours": 2,
-                        "skillsTaught": ["Git", "Version Control", "GitHub repositories"],
-                        "prerequisites": [],
-                        "summary": "Hands-on tutorial on tracking code and working with GitHub.",
-                        "isFree": True
-                    }
-                ],
-                "assessments": [
-                    {
-                        "id": "quiz-stage-1",
-                        "stage": "1. Foundations",
-                        "questionType": "coding_prompt",
-                        "question": "Write a Python function `filter_even_squares(numbers)` that takes a list of integers, filters out odd numbers, squares the even numbers, and returns the result in reverse order. Explain the time and space complexity.",
-                        "correctAnswerOrRubric": "Function uses list comprehension or loop; time complexity O(N), space complexity O(N).",
-                        "explanation": "Tests fundamental Python sequence operations, list manipulation, and algorithmic complexity awareness."
-                    }
-                ],
-                "projects": [
-                    {
-                        "id": "proj-stage-1",
-                        "title": "Automated Data Processing & Extraction CLI",
-                        "stage": "1. Foundations",
-                        "projectType": "mini_project",
-                        "problemStatement": "Build a command-line script that ingests CSV/JSON dataset files, performs validation checks, and outputs formatted statistics.",
-                        "objectives": ["Demonstrate proficiency in Python file I/O", "Implement error handling", "Use NumPy/Pandas data structures"],
-                        "skillsTested": ["Python", "Pandas", "CLI design"],
-                        "suggestedStack": ["Python 3.11", "Pandas", "Argparse"],
-                        "deliverables": ["Python CLI script", "Sample dataset", "README documentation"],
-                        "evaluationRubric": ["Correct CLI argument handling", "Clean code modularity", "Robust error logging"]
-                    }
-                ]
-            },
-            {
-                "stageNumber": 2,
-                "stageName": "2. Core Skills",
-                "description": "Build solid fundamentals in Data Structures, Data Analysis, and Supervised Machine Learning.",
-                "focusTopics": ["Data Structures & Algorithms", "SQL & Database Queries", "Supervised Learning", "Scikit-Learn"],
-                "prerequisitesRequired": ["Python Programming", "Basic Math"],
-                "resources": [
-                    {
-                        "title": "Scikit-Learn Official Tutorials & User Guide",
-                        "url": "https://scikit-learn.org/stable/tutorial/index.html",
-                        "resourceType": "documentation",
-                        "difficulty": "Intermediate",
-                        "estimatedHours": 10,
-                        "skillsTaught": ["Scikit-Learn", "Model Training", "Evaluation Metrics"],
-                        "prerequisites": ["Python basics", "NumPy"],
-                        "summary": "Official step-by-step guide to supervised and unsupervised machine learning algorithms.",
-                        "isFree": True
-                    }
-                ],
-                "assessments": [
-                    {
-                        "id": "quiz-stage-2",
-                        "stage": "2. Core Skills",
-                        "questionType": "conceptual",
-                        "question": "Explain overfitting in machine learning. How do train/test split, cross-validation, and regularization prevent it?",
-                        "correctAnswerOrRubric": "Overfitting occurs when model memorizes training noise. Prevention includes cross-validation, L1/L2 regularization, and early stopping.",
-                        "explanation": "Verifies core understanding of ML generalization and evaluation."
-                    }
-                ],
-                "projects": [
-                    {
-                        "id": "proj-stage-2",
-                        "title": "Supervised Prediction Engine & Evaluation Pipeline",
-                        "stage": "2. Core Skills",
-                        "projectType": "integration_project",
-                        "problemStatement": "Develop an end-to-end classification pipeline that cleans tabular data, engineers features, trains multiple baseline models, and evaluates ROC-AUC.",
-                        "objectives": ["Feature engineering", "Hyperparameter tuning", "Model selection"],
-                        "skillsTested": ["Scikit-Learn", "Feature Scaling", "Cross-Validation"],
-                        "suggestedStack": ["Python", "Scikit-Learn", "Matplotlib"],
-                        "deliverables": ["Jupyter notebook", "Trained model pkl", "Performance report"],
-                        "evaluationRubric": ["Proper cross-validation setup", "No data leakage", "Clear metric interpretation"]
-                    }
-                ]
-            },
-            {
-                "stageNumber": 3,
-                "stageName": "3. Specialization",
-                "description": "Dive deep into modern Deep Learning, Neural Networks, PyTorch, and domain application in " + niche + ".",
-                "focusTopics": ["Neural Networks & Backpropagation", "PyTorch", "Computer Vision / NLP", niche],
-                "prerequisitesRequired": ["Core ML Algorithms", "Linear Algebra", "Python"],
-                "resources": [
-                    {
-                        "title": "Deep Learning Specialization - DeepLearning.AI",
-                        "url": "https://www.coursera.org/specializations/deep-learning",
-                        "resourceType": "course",
-                        "difficulty": "Intermediate",
-                        "estimatedHours": 30,
-                        "skillsTaught": ["PyTorch", "Neural Networks", "Convolutional Networks", "Transformers"],
-                        "prerequisites": ["Python", "Linear Algebra"],
-                        "summary": "Gold-standard course covering deep learning architectures and optimization.",
-                        "isFree": True
-                    }
-                ],
-                "assessments": [
-                    {
-                        "id": "quiz-stage-3",
-                        "stage": "3. Specialization",
-                        "questionType": "coding_prompt",
-                        "question": "Implement a custom PyTorch `nn.Module` for a 3-layer feedforward network with ReLU activation and Dropout. Write the training loop with CrossEntropyLoss.",
-                        "correctAnswerOrRubric": "Module defines __init__ and forward methods; loss calculation and optimizer.step() inside loop.",
-                        "explanation": "Validates hands-on PyTorch architecture setup and training dynamics."
-                    }
-                ],
-                "projects": [
-                    {
-                        "id": "proj-stage-3",
-                        "title": niche + " Diagnostic Model Implementation",
-                        "stage": "3. Specialization",
-                        "projectType": "portfolio_project",
-                        "problemStatement": f"Build a PyTorch model specifically tailored for {niche}, processing complex data inputs to predict outcomes.",
-                        "objectives": [f"Apply PyTorch to {niche}", "Optimize training loss", "Handle class imbalance"],
-                        "skillsTested": ["PyTorch", "Domain Data Handling", "Model Fine-tuning"],
-                        "suggestedStack": ["PyTorch", "Torchvision / HuggingFace", "FastAPI"],
-                        "deliverables": ["Code repository", "Trained weights", "FastAPI inference service"],
-                        "evaluationRubric": ["Functional model training", "Domain validation metrics", "API inference efficiency"]
-                    }
-                ]
-            },
-            {
-                "stageNumber": 4,
-                "stageName": "4. Build",
-                "description": "Transform standalone models into robust, deployed production microservices and REST APIs.",
-                "focusTopics": ["FastAPI / Flask", "Docker Containerization", "API Deployment", "Model Serving"],
-                "prerequisitesRequired": ["PyTorch/Model Training", "Python"],
-                "resources": [
-                    {
-                        "title": "Deploying Machine Learning Models with FastAPI & Docker",
-                        "url": "https://fastapi.tiangolo.com/tutorial/",
-                        "resourceType": "documentation",
-                        "difficulty": "Intermediate",
-                        "estimatedHours": 8,
-                        "skillsTaught": ["FastAPI", "Async endpoints", "Docker deployment"],
-                        "prerequisites": ["Python"],
-                        "summary": "Production guide for serving ML model predictions via REST APIs.",
-                        "isFree": True
-                    }
-                ],
-                "assessments": [
-                    {
-                        "id": "quiz-stage-4",
-                        "stage": "4. Build",
-                        "questionType": "conceptual",
-                        "question": "What is the difference between batch inference and real-time API inference? How do Docker containers ensure reproducibility?",
-                        "correctAnswerOrRubric": "Real-time serves low-latency single requests; batch processes bulk data offline. Docker encapsulates OS, dependencies, and code environment.",
-                        "explanation": "Tests production deployment and software engineering principles."
-                    }
-                ],
-                "projects": [
-                    {
-                        "id": "proj-stage-4",
-                        "title": "Containerized ML Inference Microservice",
-                        "stage": "4. Build",
-                        "projectType": "integration_project",
-                        "problemStatement": "Wrap your trained model inside a Dockerized FastAPI application with request validation and health endpoints.",
-                        "objectives": ["Expose REST API endpoints", "Containerize app with Docker", "Test latency and payload throughput"],
-                        "skillsTested": ["FastAPI", "Docker", "Pydantic", "Uvicorn"],
-                        "suggestedStack": ["FastAPI", "Docker", "Python 3.11"],
-                        "deliverables": ["Dockerfile", "App source code", "Deployed API link or container build"],
-                        "evaluationRubric": ["Container compiles without error", "Input validation works", "Clean API documentation"]
-                    }
-                ]
-            },
-            {
-                "stageNumber": 5,
-                "stageName": "5. Prove",
-                "description": "Validate your skills in real-world environments through hackathons, open-source contributions, and peer reviews.",
-                "focusTopics": ["Hackathon Participation", "Open Source PRs", "Technical Blogging", "Peer Code Reviews"],
-                "prerequisitesRequired": ["Model Training", "REST APIs", "Git"],
-                "resources": [
-                    {
-                        "title": "Apify & She Code Africa Open-Source Guidelines",
-                        "url": "https://apify.com/store",
-                        "resourceType": "documentation",
-                        "difficulty": "Intermediate",
-                        "estimatedHours": 5,
-                        "skillsTaught": ["Apify Actor development", "Cloud deployment", "Web intelligence"],
-                        "prerequisites": ["Python / JS", "Git"],
-                        "summary": "Guide on building reusable cloud tools and submitting to open source ecosystems.",
-                        "isFree": True
-                    }
-                ],
-                "assessments": [
-                    {
-                        "id": "quiz-stage-5",
-                        "stage": "5. Prove",
-                        "questionType": "coding_prompt",
-                        "question": "Draft an Open Source Pull Request summary detailing a bug fix or feature addition, including reproduction steps and test results.",
-                        "correctAnswerOrRubric": "Clear title, problem description, solution implementation details, and verification commands.",
-                        "explanation": "Evaluates professional open-source communication and collaboration."
-                    }
-                ],
-                "projects": [
-                    {
-                        "id": "proj-stage-5",
-                        "title": "Apify Open Source Cloud Tool / Actor",
-                        "stage": "5. Prove",
-                        "projectType": "portfolio_project",
-                        "problemStatement": "Publish a reusable Apify Actor that automates web data extraction and provides structured API output.",
-                        "objectives": ["Create input schema", "Store dataset output", "Publish to Apify Store"],
-                        "skillsTested": ["Apify SDK", "Python", "API design"],
-                        "suggestedStack": ["Apify Python SDK", "Docker", "Pydantic"],
-                        "deliverables": ["Published Apify Actor", "Public GitHub repository"],
-                        "evaluationRubric": ["Valid input/output schema", "Error-free execution", "Comprehensive README"]
-                    }
-                ]
-            },
-            {
-                "stageNumber": 6,
-                "stageName": "6. Advance",
-                "description": "Expand into cutting-edge architectures: Large Language Models, RAG Systems, AI Agents, and MLOps.",
-                "focusTopics": ["RAG Systems & Vector DBs", "AI Agents & LangChain/LlamaIndex", "MLOps & Model Monitoring"],
-                "prerequisitesRequired": ["All Stages 1 to 5 satisfied"],
-                "resources": [
-                    {
-                        "title": "Full Stack LLM & RAG Application Architecture",
-                        "url": "https://www.deeplearning.ai/short-courses/",
-                        "resourceType": "course",
-                        "difficulty": "Advanced",
-                        "estimatedHours": 12,
-                        "skillsTaught": ["RAG", "Vector Search", "LangChain", "Evaluation"],
-                        "prerequisites": ["Python", "PyTorch / Transformers"],
-                        "summary": "Advanced building blocks for AI agents, retrieval systems, and LLM applications.",
-                        "isFree": True
-                    }
-                ],
-                "assessments": [
-                    {
-                        "id": "quiz-stage-6",
-                        "stage": "6. Advance",
-                        "questionType": "conceptual",
-                        "question": "How does Retrieval-Augmented Generation (RAG) overcome LLM context window limits and hallucinations? Compare sparse vs dense vector retrieval.",
-                        "correctAnswerOrRubric": "RAG fetches relevant chunked documents via embedding cosine similarity to ground response. Dense embeddings capture semantic intent; sparse keywords capture exact terms.",
-                        "explanation": "Assesses mastery of modern LLM architecture choices."
-                    }
-                ],
-                "projects": [
-                    {
-                        "id": "proj-stage-6",
-                        "title": "Autonomous AI Agent System with Tool Calling",
-                        "stage": "6. Advance",
-                        "projectType": "portfolio_project",
-                        "problemStatement": "Develop a multi-tool AI Agent capable of web searching, data processing, and generating automated reports.",
-                        "objectives": ["Implement tool selection logic", "Enforce safety boundaries", "Manage long-running tasks"],
-                        "skillsTested": ["LLM APIs", "Vector Database", "Agentic Workflows"],
-                        "suggestedStack": ["Python", "Gemini API", "ChromaDB / Qdrant"],
-                        "deliverables": ["Agent architecture codebase", "Live interactive demo"],
-                        "evaluationRubric": ["Reliable tool execution", "Minimal hallucination", "Scalable vector index"]
-                    }
-                ]
-            }
-        ]
-
-        # 3. Capstone Brief
-        capstone = {
-            "title": f"Production-Grade {niche} Intelligence & Decision System",
-            "domainTarget": f"{goal} - {niche}",
-            "problemStatement": f"Develop an end-to-end, deployed AI platform designed for {niche}. The system ingests raw domain data, applies specialized PyTorch models, and exposes a real-time containerized API.",
-            "objectives": [
-                f"Curate and preprocess realistic datasets for {niche}",
-                "Train and evaluate a high-performing PyTorch neural network",
-                "Deploy a containerized FastAPI microservice with automated testing",
-                "Integrate continuous model monitoring and automated evaluation"
+        return {
+            "targetRole": goal,
+            "summaryPitch": f"Tailored {goal} roadmap for a {learner.currentLevel} in {location} focusing on {niche}. Structured from storytelling & video editing foundations to advanced audience scaling & monetization.",
+            "skillGaps": [
+                {
+                    "skill": "Storytelling & Scriptwriting Fundamentals",
+                    "category": "Foundation",
+                    "isRequiredFor": "Engaging Video Structure & Retention",
+                    "confidence": 0.95,
+                    "explanation": "Essential foundation for planning videos, framing hooks, and keeping audiences engaged."
+                },
+                {
+                    "skill": "Video Editing & Post-Production",
+                    "category": "Core",
+                    "isRequiredFor": "Professional Cuts, Audio Clean-up & Color Grading",
+                    "confidence": 0.90,
+                    "explanation": "Prerequisite for creating high-quality visual content using industry NLE software."
+                },
+                {
+                    "skill": "Audience Analytics & Distribution Strategy",
+                    "category": "Specialization",
+                    "isRequiredFor": "Channel Growth, SEO & Monetization",
+                    "confidence": 0.85,
+                    "explanation": "Critical for optimizing thumbnails, titles, CTR, and audience retention metrics."
+                }
             ],
-            "skillsTested": ["Python", "PyTorch", "FastAPI", "Docker", "Scikit-Learn", "Data Pipeline"],
-            "suggestedStack": ["Python 3.11", "PyTorch", "FastAPI", "Docker", "Streamlit", "Apify"],
-            "deliverables": [
-                "Full Git Repository with clean commit history",
-                "Dockerfile & docker-compose.yml setup",
-                "Live deployed demo (Render/HuggingFace Spaces/AWS)",
-                "System architecture document and benchmark report"
+            "roadmap": [
+                {
+                    "stageNumber": 1,
+                    "stageName": "1. Foundations",
+                    "description": "Master storyboarding, script writing, camera positioning, and audio capture.",
+                    "focusTopics": ["Storytelling Mechanics", "Scriptwriting & Hooks", "Lighting & Framing", "Audio Capture"],
+                    "prerequisitesRequired": ["None"],
+                    "resources": [
+                        {
+                            "title": "YouTube Creator Academy - Video Production Basics",
+                            "url": "https://creatoracademy.youtube.com/",
+                            "resourceType": "course",
+                            "difficulty": "Beginner",
+                            "estimatedHours": 8,
+                            "skillsTaught": ["Scriptwriting", "Lighting", "Audio"],
+                            "prerequisites": [],
+                            "summary": "Official beginner guide to structuring engaging video content.",
+                            "isFree": True
+                        },
+                        {
+                            "title": "Smartphone Videography & Lighting Masterclass",
+                            "url": "https://www.youtube.com/",
+                            "resourceType": "youtube",
+                            "difficulty": "Beginner",
+                            "estimatedHours": 3,
+                            "skillsTaught": ["Mobile Shooting", "Lighting Setup"],
+                            "prerequisites": [],
+                            "summary": "Practical tutorial on capturing high quality video with accessible gear.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-1",
+                            "stage": "1. Foundations",
+                            "questionType": "conceptual",
+                            "question": "What is the 3-second hook rule in video production? Why is crisp audio more critical to viewer retention than 4K video resolution?",
+                            "options": None,
+                            "correctAnswerOrRubric": "The 3-second hook establishes immediate value/curiosity. Viewers tolerate low video quality but instantly click off poor audio.",
+                            "explanation": "Tests core understanding of audience retention and production priorities."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-1",
+                            "title": "60-Second Short-Form Script & Video Teaser",
+                            "stage": "1. Foundations",
+                            "projectType": "mini_project",
+                            "problemStatement": "Write a 60-second script for a video in your niche (" + niche + "), film it with clean lighting/audio, and produce a short clip.",
+                            "objectives": ["Write a strong hook", "Film with clear audio", "Apply rule-of-thirds framing"],
+                            "skillsTested": ["Scriptwriting", "Framing", "Audio"],
+                            "suggestedStack": ["Smartphone/Camera", "CapCut / Premiere", "Mic"],
+                            "deliverables": ["60-second video MP4", "Written script document"],
+                            "evaluationRubric": ["Hook clarity in first 3s", "Audio noise floor", "Framing quality"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 2,
+                    "stageName": "2. Core Skills",
+                    "description": "Master non-linear video editing software (Premiere Pro, DaVinci Resolve, CapCut Pro) and audio mixing.",
+                    "focusTopics": ["Timeline Editing & Pacing", "Color Grading & LUTs", "Audio Noise Reduction", "Motion Graphics"],
+                    "prerequisitesRequired": ["Storyboarding", "Basic Footage"],
+                    "resources": [
+                        {
+                            "title": "DaVinci Resolve / Premiere Pro Editing Complete Guide",
+                            "url": "https://www.blackmagicdesign.com/products/davinciresolve/training",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 12,
+                            "skillsTaught": ["Video Editing", "Color Grading", "Fairlight Audio"],
+                            "prerequisites": ["Footage Capture"],
+                            "summary": "Full post-production workflow training.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-2",
+                            "stage": "2. Core Skills",
+                            "questionType": "conceptual",
+                            "question": "Explain J-cuts and L-cuts in video editing. How do B-roll overlays prevent visual monotony?",
+                            "options": None,
+                            "correctAnswerOrRubric": "J-cut audio starts before video; L-cut video starts before audio. B-roll visually reinforces spoken topics.",
+                            "explanation": "Verifies editing pacing and visual storytelling skills."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-2",
+                            "title": "5-Minute Edited Vlog / Tutorial with B-Roll",
+                            "stage": "2. Core Skills",
+                            "projectType": "integration_project",
+                            "problemStatement": "Edit a 5-minute structured video with title cards, color grading, background music ducking, and relevant B-roll clips.",
+                            "objectives": ["Master J/L cuts", "Apply audio ducking", "Grade color contrast"],
+                            "skillsTested": ["Video Editing", "Audio Mixing", "B-Roll Placement"],
+                            "suggestedStack": ["DaVinci Resolve", "Premiere Pro", "CapCut"],
+                            "deliverables": ["Exported 1080p Video", "Editing project file"],
+                            "evaluationRubric": ["Seamless audio transitions", "Pacing & engagement", "Clean color balance"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 3,
+                    "stageName": "3. Specialization",
+                    "description": "Develop a distinct visual brand and editing style in " + niche + ".",
+                    "focusTopics": [niche + " Techniques", "Cinematic Transitions", "Custom Sound Design", "Brand Aesthetics"],
+                    "prerequisitesRequired": ["Video Editing Core", "Scriptwriting"],
+                    "resources": [
+                        {
+                            "title": "Cinematography & Visual Storytelling Course",
+                            "url": "https://www.skillshare.com/",
+                            "resourceType": "course",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 10,
+                            "skillsTaught": ["Cinematography", "Lighting Design", "Niche Aesthetics"],
+                            "prerequisites": ["Basic Editing"],
+                            "summary": "Specialized techniques for crafting visual identity.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-3",
+                            "stage": "3. Specialization",
+                            "questionType": "conceptual",
+                            "question": "How do lens focal length, aperture (depth of field), and shutter angle affect the cinematic feel of " + niche + " footage?",
+                            "options": None,
+                            "correctAnswerOrRubric": "180-degree shutter angle gives natural motion blur; shallow depth of field separates subject from background.",
+                            "explanation": "Validates technical camera operation and camera physics."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-3",
+                            "title": niche + " Signature Brand Showcase Video",
+                            "stage": "3. Specialization",
+                            "projectType": "portfolio_project",
+                            "problemStatement": "Create a high-production 3-minute brand showcase video specifically highlighting " + niche + " techniques.",
+                            "objectives": ["Execute cinematic lighting", "Design custom intro/outro", "Implement sound design"],
+                            "skillsTested": ["Cinematography", "Sound Design", "Niche Production"],
+                            "suggestedStack": ["Mirrorless/DSLR or Pro Phone", "NLE", "Audition"],
+                            "deliverables": ["Master 4K/1080p Video", "Thumbnail Options"],
+                            "evaluationRubric": ["Visual uniqueness", "Sound design richness", "Niche relevance"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 4,
+                    "stageName": "4. Build & Produce",
+                    "description": "Establish content batching, thumbnail design, YouTube SEO, and multi-platform publishing workflows.",
+                    "focusTopics": ["Click-Through Rate (CTR) Design", "YouTube/TikTok SEO", "Content Batching", "Repurposing Workflows"],
+                    "prerequisitesRequired": ["Editing", "Specialization"],
+                    "resources": [
+                        {
+                            "title": "Thumbnail & Graphic Design for Creators (Canva / Photoshop)",
+                            "url": "https://www.adobe.com/",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 6,
+                            "skillsTaught": ["Thumbnail Design", "CTR Optimization", "Graphic Layout"],
+                            "prerequisites": ["Basic Design"],
+                            "summary": "Guide to designing eye-catching thumbnails and graphics.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-4",
+                            "stage": "4. Build & Produce",
+                            "questionType": "conceptual",
+                            "question": "Why should thumbnails complement title text rather than repeat it? What is A/B testing in thumbnail optimization?",
+                            "options": None,
+                            "correctAnswerOrRubric": "Thumbnail and title form a combined 2-part hook. A/B testing measures which thumbnail generates higher Click-Through Rate.",
+                            "explanation": "Tests publishing psychology and click-through optimization."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-4",
+                            "title": "Multi-Platform Content Launch Campaign",
+                            "stage": "4. Build & Produce",
+                            "projectType": "integration_project",
+                            "problemStatement": "Produce 1 main long-form video, batch 3 short-form clips, and design 2 high-CTR thumbnail variants.",
+                            "objectives": ["Batch production", "Design high-CTR thumbnails", "Repurpose long-form to Reels/Shorts"],
+                            "skillsTested": ["Canva/Photoshop", "Shorts Editing", "SEO Metadata"],
+                            "suggestedStack": ["Canva", "Photoshop", "CapCut", "YouTube Studio"],
+                            "deliverables": ["Long-form video", "3 Shorts clips", "2 Thumbnail PNGs", "Metadata sheet"],
+                            "evaluationRubric": ["Thumbnail contrast & readability", "Repurposing efficiency", "SEO title hook"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 5,
+                    "stageName": "5. Prove & Publish",
+                    "description": "Launch your public channel, participate in creator challenges, and collaborate with peers.",
+                    "focusTopics": ["Channel Launch", "Creator Collaborations", "Community Engagement", "Brand Kit"],
+                    "prerequisitesRequired": ["Batch Content", "Thumbnails"],
+                    "resources": [
+                        {
+                            "title": "YouTube Creator Growth & Channel Monetization Blueprint",
+                            "url": "https://youtube.com/creators",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 5,
+                            "skillsTaught": ["Community Building", "Analytics", "Monetization Requirements"],
+                            "prerequisites": ["Channel Setup"],
+                            "summary": "Official strategy for growing a subscriber base and building community.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-5",
+                            "stage": "5. Prove & Publish",
+                            "questionType": "conceptual",
+                            "question": "How do Average Percentage Viewed (APV) and Audience Retention graphs dictate video placement in recommendation algorithms?",
+                            "options": None,
+                            "correctAnswerOrRubric": "Higher retention signals video satisfaction, triggering algorithmic recommendations to wider audiences.",
+                            "explanation": "Evaluates channel growth analytics interpretation."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-5",
+                            "title": "Public Channel Launch & Creator Media Kit",
+                            "stage": "5. Prove & Publish",
+                            "projectType": "portfolio_project",
+                            "problemStatement": "Publish a 4-video series on a live YouTube/TikTok channel, assemble a media kit, and track retention metrics.",
+                            "objectives": ["Publish live series", "Analyze YouTube Analytics", "Create Creator Media Kit"],
+                            "skillsTested": ["Channel Management", "Analytics", "Media Kit Design"],
+                            "suggestedStack": ["YouTube / TikTok", "Canva", "Notion"],
+                            "deliverables": ["Live Channel Link", "PDF Media Kit", "Analytics Review"],
+                            "evaluationRubric": ["Consistent uploads", "Professional media kit", "Metric tracking"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 6,
+                    "stageName": "6. Advance & Scale",
+                    "description": "Automate editing workflows using AI tools (CapCut AI, Descript, Runway), secure brand sponsorships, and scale production.",
+                    "focusTopics": ["AI Video Tools (Runway / Descript)", "Sponsorship Pitching", "Content Automation", "Production Team Scaling"],
+                    "prerequisitesRequired": ["Active Channel", "Consistent Uploads"],
+                    "resources": [
+                        {
+                            "title": "AI Tools for Creators & Editors (Descript & Runway)",
+                            "url": "https://www.descript.com/",
+                            "resourceType": "course",
+                            "difficulty": "Advanced",
+                            "estimatedHours": 6,
+                            "skillsTaught": ["AI Editing", "Text-Based Editing", "Voice Cloning"],
+                            "prerequisites": ["Video Editing Core"],
+                            "summary": "Modern AI workflows for accelerating video production.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-6",
+                            "stage": "6. Advance & Scale",
+                            "questionType": "conceptual",
+                            "question": "How do text-based video editors (Descript) and AI generative tools (Runway) streamline post-production workflows?",
+                            "options": None,
+                            "correctAnswerOrRubric": "Text-based editing lets you edit video by editing transcript text; generative AI produces synthetic B-roll.",
+                            "explanation": "Assesses modern AI media production capabilities."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-6",
+                            "title": "AI-Augmented Documentary & Brand Sponsorship Pitch",
+                            "stage": "6. Advance & Scale",
+                            "projectType": "portfolio_project",
+                            "problemStatement": "Produce a mini-documentary leveraging AI tools for script polishing, auto-subtitles, and generative B-roll, alongside a brand pitch deck.",
+                            "objectives": ["Integrate AI tools", "Pitch brand sponsors", "Scale production output"],
+                            "skillsTested": ["AI Video Generation", "Brand Pitching", "Production Scaling"],
+                            "suggestedStack": ["Descript", "Runway Gen-2", "DaVinci", "Pitch Deck"],
+                            "deliverables": ["Mini-Doc Video", "Sponsorship Proposal Deck"],
+                            "evaluationRubric": ["AI integration quality", "Sponsorship proposal value", "Production polish"]
+                        }
+                    ]
+                }
             ],
-            "milestones": [
-                "Milestone 1: Data acquisition and exploratory data analysis",
-                "Milestone 2: Baseline ML model vs PyTorch deep learning model",
-                "Milestone 3: FastAPI microservice wrapper and Docker containerization",
-                "Milestone 4: Interactive frontend dashboard and deployment"
+            "capstone": {
+                "title": f"High-Impact {niche} Digital Media Campaign & Video Series",
+                "domainTarget": f"{goal} - {niche}",
+                "problemStatement": f"Plan, film, edit, and launch a complete 3-part video series focusing on {niche}. The campaign includes brand guidelines, thumbnail A/B testing, AI-assisted post-production, and a sponsor pitch proposal.",
+                "objectives": [
+                    f"Curate and script 3 original videos in {niche}",
+                    "Film with professional lighting, audio, and camera framing",
+                    "Edit with custom color grading, sound design, and motion graphics",
+                    "Publish with optimized thumbnails and track audience analytics"
+                ],
+                "skillsTested": ["Scriptwriting", "Videography", "Editing", "Canva/Photoshop", "YouTube SEO", "AI Tools"],
+                "suggestedStack": ["DaVinci Resolve / Premiere", "CapCut", "Descript", "Canva", "YouTube Studio"],
+                "deliverables": [
+                    "3 Published High-Quality Videos",
+                    "2 Custom Thumbnails per video",
+                    "Creator Media Kit & Sponsorship Deck",
+                    "Analytics & Audience Retention Report"
+                ],
+                "milestones": [
+                    "Milestone 1: Scriptwriting, storyboarding, and gear setup",
+                    "Milestone 2: Filming, audio capture, and raw footage organization",
+                    "Milestone 3: Video editing, color grading, and sound design",
+                    "Milestone 4: Publishing, thumbnail design, and campaign launch"
+                ],
+                "evaluationCriteria": [
+                    "Viewer retention (>50% average retention target)",
+                    "Thumbnail Click-Through Rate (CTR > 6%)",
+                    "Audio and visual production quality",
+                    "Consistency of visual branding"
+                ],
+                "extensionIdeas": [
+                    "Create automated short-form clips using CapCut AI for Instagram & TikTok",
+                    "Launch a newsletter or community discord for video subscribers"
+                ]
+            },
+            "opportunities": [
+                {
+                    "title": "Apify × She Code Africa Digital Content Challenge 2026",
+                    "organizer": "Apify & She Code Africa",
+                    "opportunityType": "hackathon",
+                    "deadline": "2026-10-15",
+                    "eligibility": "Open to creators, storytellers, and tech learners across Africa",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Content Creation", "Videography", "Storytelling", "Digital Media"],
+                    "difficultyEstimate": "Beginner to Intermediate friendly",
+                    "applicationUrl": "https://apify.com/hackathons",
+                    "sourceUrl": "https://apify.com/",
+                    "matchReason": f"Directly aligns with your goal ({goal}). Offers mentorship, cash prizes, and platform exposure."
+                },
+                {
+                    "title": "YouTube Creator Growth & Grant Program",
+                    "organizer": "YouTube Creators Initiative",
+                    "opportunityType": "competition",
+                    "deadline": "2026-11-01",
+                    "eligibility": "Emerging creators in Africa",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Video Production", "Channel Management"],
+                    "difficultyEstimate": "Intermediate",
+                    "applicationUrl": "https://youtube.com/creators",
+                    "sourceUrl": "https://youtube.com/",
+                    "matchReason": f"Perfect match for scaling your channel and video production skills in {niche}."
+                },
+                {
+                    "title": "African Tech Media & Storytelling Fellowship",
+                    "organizer": "She Code Africa",
+                    "opportunityType": "internship",
+                    "deadline": "2026-12-01",
+                    "eligibility": "Early-career content creators & digital media producers",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Videography", "Editing", "Social Media"],
+                    "difficultyEstimate": "Intermediate",
+                    "applicationUrl": "https://shecodeafrica.org/",
+                    "sourceUrl": "https://shecodeafrica.org/",
+                    "matchReason": "Provides mentorship and production resources for technical content creators."
+                }
             ],
-            "evaluationCriteria": [
-                "Model F1-Score / Accuracy on test set (>0.85 target)",
-                "API endpoint p95 latency under 200ms",
-                "Code coverage and clean engineering standards",
-                "Clarity of README and user documentation"
-            ],
-            "extensionIdeas": [
-                "Add RAG pipeline to allow querying domain medical/tech guidelines",
-                "Integrate real-time notification alerts for anomalous model outputs"
+            "sources": [
+                "https://creatoracademy.youtube.com/",
+                "https://www.blackmagicdesign.com/products/davinciresolve/training",
+                "https://fastapi.tiangolo.com/",
+                "https://apify.com/store"
             ]
         }
 
-        # 4. Opportunities
-        opportunities = [
-            {
-                "title": "Apify × She Code Africa Hackathon 2026",
-                "organizer": "Apify & She Code Africa",
-                "opportunityType": "hackathon",
-                "deadline": "2026-10-15",
-                "eligibility": "Open to developers, students, and tech learners across Africa",
-                "remoteStatus": "Remote",
-                "requiredSkills": ["Python", "Web Crawling", "API Development", "AI/ML"],
-                "difficultyEstimate": "Beginner to Intermediate friendly",
-                "applicationUrl": "https://apify.com/hackathons",
-                "sourceUrl": "https://apify.com/",
-                "matchReason": f"Directly aligns with your growth stage and goal ({goal}). Offers mentorship, cash prizes, and Apify Actor publishing exposure."
-            },
-            {
-                "title": "Kaggle Community Healthcare AI Challenge",
-                "organizer": "Kaggle Competitions",
-                "opportunityType": "competition",
-                "deadline": "2026-11-01",
-                "eligibility": "Global community",
-                "remoteStatus": "Remote",
-                "requiredSkills": ["Python", "Scikit-Learn", "PyTorch", "Data Science"],
-                "difficultyEstimate": "Intermediate",
-                "applicationUrl": "https://www.kaggle.com/competitions",
-                "sourceUrl": "https://www.kaggle.com/",
-                "matchReason": f"Perfect match for building practical proof in {niche} using real tabular and image datasets."
-            },
-            {
-                "title": "Open Source AI Engineering Fellowship",
-                "organizer": "Global Tech Talent Network",
-                "opportunityType": "internship",
-                "deadline": "2026-12-01",
-                "eligibility": "Early-career developers & students",
-                "remoteStatus": "Remote",
-                "requiredSkills": ["Python", "Git", "REST APIs"],
-                "difficultyEstimate": "Intermediate",
-                "applicationUrl": "https://shecodeafrica.org/",
-                "sourceUrl": "https://shecodeafrica.org/",
-                "matchReason": "Provides mentorship bridge into full-time remote engineering roles."
-            }
-        ]
-
+    def _build_software_engineer_path(self, learner: LearnerInput, niche: str, location: str) -> Dict[str, Any]:
+        goal = learner.goal
         return {
             "targetRole": goal,
-            "summaryPitch": f"Tailored {goal} roadmap for a {learner.currentLevel} in {learner.location} focusing on {niche}. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
-            "skillGaps": skill_gaps,
-            "roadmap": roadmap,
-            "capstone": capstone,
-            "opportunities": opportunities,
+            "summaryPitch": f"Tailored {goal} roadmap for a {learner.currentLevel} in {location} focusing on {niche}. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
+            "skillGaps": [
+                {
+                    "skill": "Data Structures & Algorithms",
+                    "category": "Foundation",
+                    "isRequiredFor": "System Efficiency & Coding Interviews",
+                    "confidence": 0.95,
+                    "explanation": "Essential foundation for writing scalable algorithms and solving complex problems."
+                },
+                {
+                    "skill": "Database Architecture & SQL/NoSQL",
+                    "category": "Core",
+                    "isRequiredFor": "Backend Data Persistence",
+                    "confidence": 0.90,
+                    "explanation": "Prerequisite for building data-backed application services."
+                }
+            ],
+            "roadmap": [
+                {
+                    "stageNumber": 1,
+                    "stageName": "1. Foundations",
+                    "description": "Master core programming, version control, and computer science basics.",
+                    "focusTopics": ["Python / JavaScript", "Git & GitHub", "Object-Oriented Programming", "Command Line"],
+                    "prerequisitesRequired": ["None"],
+                    "resources": [
+                        {
+                            "title": "CS50: Introduction to Computer Science",
+                            "url": "https://cs50.harvard.edu/",
+                            "resourceType": "course",
+                            "difficulty": "Beginner",
+                            "estimatedHours": 20,
+                            "skillsTaught": ["C", "Python", "Algorithms", "Data Structures"],
+                            "prerequisites": [],
+                            "summary": "Gold standard introduction to computer science and programming fundamentals.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-1",
+                            "stage": "1. Foundations",
+                            "questionType": "coding_prompt",
+                            "question": "Implement a stack data structure with push, pop, and peek operations in Python/JavaScript. Explain Big-O time complexity.",
+                            "options": None,
+                            "correctAnswerOrRubric": "Stack implemented using list/array with O(1) push and pop.",
+                            "explanation": "Tests fundamental data structure concepts."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-1",
+                            "title": "CLI Task Manager & File Processor",
+                            "stage": "1. Foundations",
+                            "projectType": "mini_project",
+                            "problemStatement": "Build a command line application that manages tasks and saves state to JSON files.",
+                            "objectives": ["File I/O", "Data structures", "OOP design"],
+                            "skillsTested": ["Python", "JSON", "CLI"],
+                            "suggestedStack": ["Python 3.11", "Argparse"],
+                            "deliverables": ["CLI codebase", "README"],
+                            "evaluationRubric": ["Error handling", "Clean OOP structure"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 2,
+                    "stageName": "2. Core Skills",
+                    "description": "Build relational databases, SQL queries, and RESTful API endpoints.",
+                    "focusTopics": ["SQL & PostgreSQL", "REST API Design", "Data Structures", "HTTP Protocols"],
+                    "prerequisitesRequired": ["Programming Foundations"],
+                    "resources": [
+                        {
+                            "title": "PostgreSQL & SQL Mastery Guide",
+                            "url": "https://www.postgresql.org/docs/",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 10,
+                            "skillsTaught": ["SQL", "Relational Database Design", "Indexing"],
+                            "prerequisites": ["Basic Programming"],
+                            "summary": "Complete guide to SQL databases.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-2",
+                            "stage": "2. Core Skills",
+                            "questionType": "conceptual",
+                            "question": "Explain database normalization (1NF, 2NF, 3NF) and the difference between INNER JOIN and LEFT JOIN.",
+                            "options": None,
+                            "correctAnswerOrRubric": "Normalization eliminates redundancy. INNER JOIN returns matching rows; LEFT JOIN returns all left rows.",
+                            "explanation": "Verifies SQL and database architecture knowledge."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-2",
+                            "title": "Database-Backed RESTful Microservice",
+                            "stage": "2. Core Skills",
+                            "projectType": "integration_project",
+                            "problemStatement": "Develop a REST API with CRUD endpoints backed by a PostgreSQL database.",
+                            "objectives": ["Database schema design", "SQL integration", "REST endpoints"],
+                            "skillsTested": ["Python/Node", "SQL", "FastAPI/Express"],
+                            "suggestedStack": ["FastAPI", "PostgreSQL", "SQLAlchemy"],
+                            "deliverables": ["API Codebase", "SQL Migration Scripts"],
+                            "evaluationRubric": ["Clean CRUD endpoints", "SQL query safety"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 3,
+                    "stageName": "3. Specialization",
+                    "description": "Specialize in " + niche + " backend architecture, microservices, and system design.",
+                    "focusTopics": [niche + " Microservices", "Authentication (JWT/OAuth)", "Caching (Redis)", "Async Queues"],
+                    "prerequisitesRequired": ["REST APIs", "SQL"],
+                    "resources": [
+                        {
+                            "title": "System Design Primer - GitHub",
+                            "url": "https://github.com/donnemartin/system-design-primer",
+                            "resourceType": "repository",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 25,
+                            "skillsTaught": ["System Design", "Scalability", "Caching", "Load Balancing"],
+                            "prerequisites": ["Core Web Dev"],
+                            "summary": "Comprehensive guide to designing large-scale systems.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-3",
+                            "stage": "3. Specialization",
+                            "questionType": "conceptual",
+                            "question": "How does Redis caching improve API response times? What is cache invalidation?",
+                            "options": None,
+                            "correctAnswerOrRubric": "Redis stores key-value pairs in memory for sub-millisecond retrieval. Invalidation removes stale cache items.",
+                            "explanation": "Tests backend caching and scalability."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-3",
+                            "title": niche + " High-Throughput Microservice",
+                            "stage": "3. Specialization",
+                            "projectType": "portfolio_project",
+                            "problemStatement": f"Build a resilient microservice designed for {niche} with JWT authentication and Redis caching.",
+                            "objectives": ["Implement JWT auth", "Cache frequent queries", "Handle rate limiting"],
+                            "skillsTested": ["FastAPI", "Redis", "PostgreSQL", "JWT"],
+                            "suggestedStack": ["FastAPI", "Redis", "PostgreSQL"],
+                            "deliverables": ["Microservice Repo", "Swagger API Docs"],
+                            "evaluationRubric": ["Sub-100ms response time", "Secure auth logic"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 4,
+                    "stageName": "4. Build & Deploy",
+                    "description": "Containerize services with Docker and deploy to cloud platforms with CI/CD pipelines.",
+                    "focusTopics": ["Docker & Docker Compose", "CI/CD Pipelines (GitHub Actions)", "Cloud Deployment (AWS/Render)", "Monitoring"],
+                    "prerequisitesRequired": ["Microservices", "Git"],
+                    "resources": [
+                        {
+                            "title": "Docker & Kubernetes Official Guides",
+                            "url": "https://docs.docker.com/",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 10,
+                            "skillsTaught": ["Docker", "Containerization", "Compose"],
+                            "prerequisites": ["Command Line"],
+                            "summary": "Containerization standards for software applications.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-4",
+                            "stage": "4. Build & Deploy",
+                            "questionType": "conceptual",
+                            "question": "Explain the difference between a Docker image and a Docker container. How does multi-stage building reduce container image size?",
+                            "options": None,
+                            "correctAnswerOrRubric": "Image is a static template; container is a running instance. Multi-stage builds strip out build-time dependencies.",
+                            "explanation": "Validates containerization efficiency."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-4",
+                            "title": "Containerized CI/CD Production Deployment",
+                            "stage": "4. Build & Deploy",
+                            "projectType": "integration_project",
+                            "problemStatement": "Setup docker-compose for app + DB + Redis, and configure GitHub Actions for automated testing and deployment.",
+                            "objectives": ["Multi-container compose", "Automate CI/CD", "Deploy to cloud"],
+                            "skillsTested": ["Docker Compose", "GitHub Actions", "Cloud Hosting"],
+                            "suggestedStack": ["Docker", "GitHub Actions", "Render / AWS"],
+                            "deliverables": ["Dockerfile", "docker-compose.yml", "Live App URL"],
+                            "evaluationRubric": ["Automated test pass on push", "Zero-downtime deploy"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 5,
+                    "stageName": "5. Prove & Publish",
+                    "description": "Publish open-source tools, contribute to active GitHub projects, and publish Apify Actors.",
+                    "focusTopics": ["Apify Actor Publishing", "Open Source Contribution", "Tech Writing"],
+                    "prerequisitesRequired": ["Docker", "Git", "REST APIs"],
+                    "resources": [
+                        {
+                            "title": "Apify Open Source Actor Development Guide",
+                            "url": "https://apify.com/store",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 5,
+                            "skillsTaught": ["Apify SDK", "Actor Publishing"],
+                            "prerequisites": ["Python / JS"],
+                            "summary": "Guide on publishing serverless cloud tools.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-5",
+                            "stage": "5. Prove & Publish",
+                            "questionType": "coding_prompt",
+                            "question": "Draft an Open Source PR description detailing a bug fix, root cause analysis, and unit test verification.",
+                            "options": None,
+                            "correctAnswerOrRubric": "Clear title, root cause, code fix details, and test logs.",
+                            "explanation": "Assesses professional collaboration skills."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-5",
+                            "title": "Apify Cloud Automation Actor",
+                            "stage": "5. Prove & Publish",
+                            "projectType": "portfolio_project",
+                            "problemStatement": "Develop and publish a serverless Apify Actor that automates web data extraction and provides API endpoints.",
+                            "objectives": ["Define input schema", "Process data", "Publish to Apify Store"],
+                            "skillsTested": ["Apify SDK", "Python/Node", "API Design"],
+                            "suggestedStack": ["Apify SDK", "Docker", "Pydantic"],
+                            "deliverables": ["Published Apify Actor Link", "Public GitHub Repo"],
+                            "evaluationRubric": ["Clean input/output schema", "Published on Store"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 6,
+                    "stageName": "6. Advance & Scale",
+                    "description": "Master distributed systems, event-driven architecture (Kafka/RabbitMQ), and cloud architecture.",
+                    "focusTopics": ["Event-Driven Architecture (Kafka)", "Microservices Resiliency", "Kubernetes", "Observability"],
+                    "prerequisitesRequired": ["Stages 1 to 5 satisfied"],
+                    "resources": [
+                        {
+                            "title": "Designing Data-Intensive Applications",
+                            "url": "https://dataintensive.net/",
+                            "resourceType": "book",
+                            "difficulty": "Advanced",
+                            "estimatedHours": 30,
+                            "skillsTaught": ["Distributed Systems", "Replication", "Partitioning", "Transactions"],
+                            "prerequisites": ["Backend Core"],
+                            "summary": "Definitive guide to system architecture and distributed data.",
+                            "isFree": False
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-6",
+                            "stage": "6. Advance & Scale",
+                            "questionType": "conceptual",
+                            "question": "Compare message queues (RabbitMQ/Kafka) with synchronous HTTP REST calls for inter-service communication.",
+                            "options": None,
+                            "correctAnswerOrRubric": "Message queues decouple producers and consumers asynchronously, preventing cascading failures.",
+                            "explanation": "Evaluates distributed systems architecture comprehension."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-6",
+                            "title": f"Distributed Event-Driven {niche} Platform",
+                            "stage": "6. Advance & Scale",
+                            "projectType": "portfolio_project",
+                            "problemStatement": f"Build a multi-service event-driven architecture for {niche} using Kafka, PostgreSQL, and distributed tracing.",
+                            "objectives": ["Event streaming with Kafka", "Distributed logging", "High availability"],
+                            "skillsTested": ["Kafka", "Docker", "Microservices", "Monitoring"],
+                            "suggestedStack": ["Kafka", "Python/Go", "PostgreSQL", "Prometheus"],
+                            "deliverables": ["Multi-repo architecture", "System benchmark report"],
+                            "evaluationRubric": ["Fault tolerance under load", "Clean event schemas"]
+                        }
+                    ]
+                }
+            ],
+            "capstone": {
+                "title": f"Production-Grade {niche} Microservice & Platform Architecture",
+                "domainTarget": f"{goal} - {niche}",
+                "problemStatement": f"Develop an end-to-end, deployed backend platform designed for {niche}. The system handles user auth, database persistence, caching, containerization, and cloud API deployment.",
+                "objectives": [
+                    f"Design relational database schemas for {niche}",
+                    "Build high-throughput REST APIs with authentication & caching",
+                    "Containerize with Docker Compose and set up GitHub Actions CI/CD",
+                    "Deploy live to cloud hosting with API documentation"
+                ],
+                "skillsTested": ["Python", "SQL", "FastAPI", "Docker", "Redis", "CI/CD"],
+                "suggestedStack": ["Python 3.11", "FastAPI", "PostgreSQL", "Redis", "Docker", "GitHub Actions"],
+                "deliverables": [
+                    "Full Git Repository with clean commits",
+                    "Dockerfile & docker-compose.yml setup",
+                    "Live deployed API documentation (Swagger)",
+                    "System architecture document & load test report"
+                ],
+                "milestones": [
+                    "Milestone 1: Database schema design & ORM models",
+                    "Milestone 2: REST API endpoints & JWT authentication",
+                    "Milestone 3: Redis caching layer & performance optimization",
+                    "Milestone 4: Docker containerization & cloud CI/CD deployment"
+                ],
+                "evaluationCriteria": [
+                    "API endpoint p95 latency under 100ms",
+                    "Database query efficiency (indexed foreign keys)",
+                    "Clean code modularity and unit test coverage (>80%)",
+                    "Comprehensive API documentation"
+                ],
+                "extensionIdeas": [
+                    "Integrate Kafka or RabbitMQ event stream for async background tasks",
+                    "Add Prometheus & Grafana dashboard for live server metrics"
+                ]
+            },
+            "opportunities": [
+                {
+                    "title": "Apify × She Code Africa Hackathon 2026",
+                    "organizer": "Apify & She Code Africa",
+                    "opportunityType": "hackathon",
+                    "deadline": "2026-10-15",
+                    "eligibility": "Open to developers and tech learners across Africa",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Python", "API Development", "Web Crawling", "Docker"],
+                    "difficultyEstimate": "Beginner to Intermediate friendly",
+                    "applicationUrl": "https://apify.com/hackathons",
+                    "sourceUrl": "https://apify.com/",
+                    "matchReason": f"Directly aligns with your goal ({goal}). Offers mentorship, cash prizes, and Apify Actor publishing exposure."
+                },
+                {
+                    "title": "Global Open Source Software Fellowship",
+                    "organizer": "Global Tech Talent Network",
+                    "opportunityType": "internship",
+                    "deadline": "2026-11-15",
+                    "eligibility": "Early-career developers",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Git", "Python/JS", "REST APIs"],
+                    "difficultyEstimate": "Intermediate",
+                    "applicationUrl": "https://shecodeafrica.org/",
+                    "sourceUrl": "https://shecodeafrica.org/",
+                    "matchReason": f"Provides mentorship bridge into full-time remote engineering roles."
+                }
+            ],
+            "sources": [
+                "https://cs50.harvard.edu/",
+                "https://www.postgresql.org/",
+                "https://fastapi.tiangolo.com/",
+                "https://apify.com/store"
+            ]
+        }
+
+    def _build_machine_learning_path(self, learner: LearnerInput, niche: str, location: str) -> Dict[str, Any]:
+        goal = learner.goal
+        return {
+            "targetRole": goal,
+            "summaryPitch": f"Tailored {goal} roadmap for a {learner.currentLevel} in {location} focusing on {niche}. Designed with strict prerequisite ordering (Foundations → Core → Specialization → Build → Prove → Advance).",
+            "skillGaps": [
+                {
+                    "skill": "Linear Algebra & Statistics for ML",
+                    "category": "Foundation",
+                    "isRequiredFor": "Supervised Learning, Optimization & Model Evaluation",
+                    "confidence": 0.90,
+                    "explanation": "Prerequisite for understanding model weights, loss functions, and probability."
+                },
+                {
+                    "skill": "Data Structures & Algorithms",
+                    "category": "Core",
+                    "isRequiredFor": "System Efficiency & Coding Interviews",
+                    "confidence": 0.88,
+                    "explanation": "Critical for writing scalable algorithms and building production systems."
+                }
+            ],
+            "roadmap": [
+                {
+                    "stageNumber": 1,
+                    "stageName": "1. Foundations",
+                    "description": "Master core programming, version control, and prerequisite mathematics.",
+                    "focusTopics": ["Python Basics", "Git & GitHub", "NumPy & Data Manipulation", "Basic Statistics"],
+                    "prerequisitesRequired": ["None"],
+                    "resources": [
+                        {
+                            "title": "Python for Everybody Specialization",
+                            "url": "https://www.py4e.com/",
+                            "resourceType": "course",
+                            "difficulty": "Beginner",
+                            "estimatedHours": 15,
+                            "skillsTaught": ["Python syntax", "Data Structures"],
+                            "prerequisites": [],
+                            "summary": "Comprehensive beginner introduction to Python programming.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-1",
+                            "stage": "1. Foundations",
+                            "questionType": "coding_prompt",
+                            "question": "Write a Python function `filter_even_squares(numbers)` that takes a list of integers, filters out odd numbers, squares the even numbers, and returns the result in reverse order. Explain time complexity.",
+                            "options": None,
+                            "correctAnswerOrRubric": "Time complexity O(N), space O(N).",
+                            "explanation": "Tests fundamental Python sequence operations."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-1",
+                            "title": "Automated Data Processing & Extraction CLI",
+                            "stage": "1. Foundations",
+                            "projectType": "mini_project",
+                            "problemStatement": "Build a command-line script that ingests CSV/JSON dataset files and outputs formatted statistics.",
+                            "objectives": ["File I/O", "Pandas", "CLI"],
+                            "skillsTested": ["Python", "Pandas"],
+                            "suggestedStack": ["Python 3.11", "Pandas"],
+                            "deliverables": ["CLI Script", "README"],
+                            "evaluationRubric": ["Error handling", "Clean code"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 2,
+                    "stageName": "2. Core Skills",
+                    "description": "Build solid fundamentals in Data Structures, Data Analysis, and Supervised Machine Learning.",
+                    "focusTopics": ["Data Structures & Algorithms", "SQL Queries", "Supervised Learning", "Scikit-Learn"],
+                    "prerequisitesRequired": ["Python", "Basic Math"],
+                    "resources": [
+                        {
+                            "title": "Scikit-Learn Official User Guide",
+                            "url": "https://scikit-learn.org/",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 10,
+                            "skillsTaught": ["Scikit-Learn", "Model Training"],
+                            "prerequisites": ["Python"],
+                            "summary": "Official guide to machine learning algorithms.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-2",
+                            "stage": "2. Core Skills",
+                            "questionType": "conceptual",
+                            "question": "Explain overfitting in machine learning. How do cross-validation and regularization prevent it?",
+                            "options": None,
+                            "correctAnswerOrRubric": "Overfitting happens when model memorizes training noise.",
+                            "explanation": "Verifies core understanding of ML evaluation."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-2",
+                            "title": "Supervised Prediction Pipeline",
+                            "stage": "2. Core Skills",
+                            "projectType": "integration_project",
+                            "problemStatement": "Develop an end-to-end classification pipeline that cleans tabular data and evaluates performance.",
+                            "objectives": ["Feature engineering", "Model evaluation"],
+                            "skillsTested": ["Scikit-Learn", "Pandas"],
+                            "suggestedStack": ["Python", "Scikit-Learn"],
+                            "deliverables": ["Jupyter notebook", "Trained model pkl"],
+                            "evaluationRubric": ["No data leakage", "Proper metrics"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 3,
+                    "stageName": "3. Specialization",
+                    "description": "Dive deep into modern Deep Learning, Neural Networks, PyTorch, and " + niche + ".",
+                    "focusTopics": ["Neural Networks", "PyTorch", "Computer Vision / NLP", niche],
+                    "prerequisitesRequired": ["Core ML", "Linear Algebra"],
+                    "resources": [
+                        {
+                            "title": "Deep Learning Specialization - DeepLearning.AI",
+                            "url": "https://www.coursera.org/specializations/deep-learning",
+                            "resourceType": "course",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 30,
+                            "skillsTaught": ["PyTorch", "Neural Nets"],
+                            "prerequisites": ["Python"],
+                            "summary": "Deep learning architectures and optimization.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-3",
+                            "stage": "3. Specialization",
+                            "questionType": "coding_prompt",
+                            "question": "Implement a custom PyTorch nn.Module for a 3-layer neural network with ReLU and Dropout.",
+                            "options": None,
+                            "correctAnswerOrRubric": "Defines __init__ and forward pass.",
+                            "explanation": "Validates PyTorch hands-on skill."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-3",
+                            "title": niche + " ML Model Implementation",
+                            "stage": "3. Specialization",
+                            "projectType": "portfolio_project",
+                            "problemStatement": f"Build a PyTorch model specifically tailored for {niche}.",
+                            "objectives": [f"Apply PyTorch to {niche}", "Optimize loss"],
+                            "skillsTested": ["PyTorch", "Data Preprocessing"],
+                            "suggestedStack": ["PyTorch", "FastAPI"],
+                            "deliverables": ["Code repo", "Trained weights"],
+                            "evaluationRubric": ["Functional model training", "Clean code"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 4,
+                    "stageName": "4. Build & Deploy",
+                    "description": "Transform standalone models into robust production microservices.",
+                    "focusTopics": ["FastAPI", "Docker", "API Deployment", "Model Serving"],
+                    "prerequisitesRequired": ["PyTorch", "Python"],
+                    "resources": [
+                        {
+                            "title": "Deploying ML Models with FastAPI & Docker",
+                            "url": "https://fastapi.tiangolo.com/",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 8,
+                            "skillsTaught": ["FastAPI", "Docker"],
+                            "prerequisites": ["Python"],
+                            "summary": "Production guide for serving ML model predictions.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-4",
+                            "stage": "4. Build & Deploy",
+                            "questionType": "conceptual",
+                            "question": "What is the difference between batch inference and real-time API inference?",
+                            "options": None,
+                            "correctAnswerOrRubric": "Real-time serves low-latency requests; batch processes bulk data.",
+                            "explanation": "Tests deployment principles."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-4",
+                            "title": "Containerized ML Inference Microservice",
+                            "stage": "4. Build & Deploy",
+                            "projectType": "integration_project",
+                            "problemStatement": "Wrap your trained model inside a Dockerized FastAPI app.",
+                            "objectives": ["Expose REST API", "Containerize app"],
+                            "skillsTested": ["FastAPI", "Docker"],
+                            "suggestedStack": ["FastAPI", "Docker"],
+                            "deliverables": ["Dockerfile", "API code"],
+                            "evaluationRubric": ["Container compiles", "Input validation"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 5,
+                    "stageName": "5. Prove & Publish",
+                    "description": "Validate your skills in real-world environments through hackathons and Apify Actors.",
+                    "focusTopics": ["Hackathons", "Apify Actor Publishing", "Open Source"],
+                    "prerequisitesRequired": ["Model Training", "REST APIs"],
+                    "resources": [
+                        {
+                            "title": "Apify Open Source Actor Development Guide",
+                            "url": "https://apify.com/store",
+                            "resourceType": "documentation",
+                            "difficulty": "Intermediate",
+                            "estimatedHours": 5,
+                            "skillsTaught": ["Apify SDK", "Actor Publishing"],
+                            "prerequisites": ["Python"],
+                            "summary": "Guide on publishing serverless cloud tools.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-5",
+                            "stage": "5. Prove & Publish",
+                            "questionType": "coding_prompt",
+                            "question": "Draft an Open Source PR description detailing a bug fix and test results.",
+                            "options": None,
+                            "correctAnswerOrRubric": "Clear title, problem description, fix details.",
+                            "explanation": "Evaluates open-source communication."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-5",
+                            "title": "Apify Open Source Cloud Tool / Actor",
+                            "stage": "5. Prove & Publish",
+                            "projectType": "portfolio_project",
+                            "problemStatement": "Publish a reusable Apify Actor that automates web data extraction.",
+                            "objectives": ["Create input schema", "Publish to Apify Store"],
+                            "skillsTested": ["Apify SDK", "Python"],
+                            "suggestedStack": ["Apify SDK", "Docker"],
+                            "deliverables": ["Published Apify Actor"],
+                            "evaluationRubric": ["Valid input/output schema"]
+                        }
+                    ]
+                },
+                {
+                    "stageNumber": 6,
+                    "stageName": "6. Advance (LLMs & Agents)",
+                    "description": "Expand into cutting-edge architectures: LLMs, RAG Systems, AI Agents, and MLOps.",
+                    "focusTopics": ["RAG Systems", "AI Agents", "MLOps"],
+                    "prerequisitesRequired": ["Stages 1 to 5 satisfied"],
+                    "resources": [
+                        {
+                            "title": "Full Stack LLM & RAG Application Architecture",
+                            "url": "https://www.deeplearning.ai/",
+                            "resourceType": "course",
+                            "difficulty": "Advanced",
+                            "estimatedHours": 12,
+                            "skillsTaught": ["RAG", "Vector Search"],
+                            "prerequisites": ["PyTorch"],
+                            "summary": "Building blocks for AI agents and RAG applications.",
+                            "isFree": True
+                        }
+                    ],
+                    "assessments": [
+                        {
+                            "id": "quiz-stage-6",
+                            "stage": "6. Advance (LLMs & Agents)",
+                            "questionType": "conceptual",
+                            "question": "How does Retrieval-Augmented Generation (RAG) overcome LLM context window limits?",
+                            "options": None,
+                            "correctAnswerOrRubric": "RAG fetches relevant chunked documents via embedding similarity.",
+                            "explanation": "Assesses modern LLM architecture choices."
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "id": "proj-stage-6",
+                            "title": "Autonomous AI Agent System with Tool Calling",
+                            "stage": "6. Advance (LLMs & Agents)",
+                            "projectType": "portfolio_project",
+                            "problemStatement": "Develop a multi-tool AI Agent capable of web searching and data processing.",
+                            "objectives": ["Implement tool selection", "Manage tasks"],
+                            "skillsTested": ["LLM APIs", "Vector Database"],
+                            "suggestedStack": ["Python", "Gemini API", "ChromaDB"],
+                            "deliverables": ["Agent codebase", "Live demo"],
+                            "evaluationRubric": ["Reliable tool execution", "Minimal hallucination"]
+                        }
+                    ]
+                }
+            ],
+            "capstone": {
+                "title": f"Production-Grade {niche} Intelligence & Decision System",
+                "domainTarget": f"{goal} - {niche}",
+                "problemStatement": f"Develop an end-to-end, deployed AI platform designed for {niche}. The system ingests raw domain data, applies PyTorch models, and exposes a containerized API.",
+                "objectives": [
+                    f"Curate and preprocess datasets for {niche}",
+                    "Train a high-performing PyTorch model",
+                    "Deploy containerized FastAPI microservice"
+                ],
+                "skillsTested": ["Python", "PyTorch", "FastAPI", "Docker"],
+                "suggestedStack": ["Python 3.11", "PyTorch", "FastAPI", "Docker"],
+                "deliverables": ["Git Repo", "Dockerfile", "Live Demo Link"],
+                "milestones": [
+                    "Milestone 1: Data acquisition and EDA",
+                    "Milestone 2: Baseline vs PyTorch model",
+                    "Milestone 3: FastAPI microservice and Docker setup",
+                    "Milestone 4: Cloud deployment"
+                ],
+                "evaluationCriteria": [
+                    "Model accuracy/F1-score",
+                    "API latency under 200ms"
+                ],
+                "extensionIdeas": [
+                    "Add RAG vector search pipeline"
+                ]
+            },
+            "opportunities": [
+                {
+                    "title": "Apify × She Code Africa Hackathon 2026",
+                    "organizer": "Apify & She Code Africa",
+                    "opportunityType": "hackathon",
+                    "deadline": "2026-10-15",
+                    "eligibility": "Open to developers across Africa",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Python", "Web Crawling", "API Development"],
+                    "difficultyEstimate": "Beginner to Intermediate friendly",
+                    "applicationUrl": "https://apify.com/hackathons",
+                    "sourceUrl": "https://apify.com/",
+                    "matchReason": f"Directly aligns with your goal ({goal})."
+                },
+                {
+                    "title": "Kaggle Community AI Challenge",
+                    "organizer": "Kaggle Competitions",
+                    "opportunityType": "competition",
+                    "deadline": "2026-11-01",
+                    "eligibility": "Global community",
+                    "remoteStatus": "Remote",
+                    "requiredSkills": ["Python", "PyTorch"],
+                    "difficultyEstimate": "Intermediate",
+                    "applicationUrl": "https://www.kaggle.com/",
+                    "sourceUrl": "https://www.kaggle.com/",
+                    "matchReason": f"Perfect match for building practical proof in {niche}."
+                }
+            ],
             "sources": [
                 "https://www.py4e.com/",
                 "https://scikit-learn.org/",

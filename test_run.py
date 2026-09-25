@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os
 import sys
 from dotenv import load_dotenv
 
@@ -30,8 +29,6 @@ async def run_demo():
         interests=["Healthcare AI", "NLP"],
         learningPreferences=["video", "hands-on"],
         depth="deep",
-        geminiApiKey=os.getenv("GEMINI_API_KEY"),
-        apifyToken=os.getenv("APIFY_TOKEN")
     )
 
     print(f"[Input Goal] {demo_input.goal}")

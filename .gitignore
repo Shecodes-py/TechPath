@@ -1,3 +1,10 @@
 .venv/
-.venv
 .env
+__pycache__/
+*.pyc
+storage/
+*.xlsx
+*_output.json
+demo_output.json
+creator_output.json
+custom_output.json

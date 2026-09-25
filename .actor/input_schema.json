@@ -61,10 +61,32 @@
       "default": "deep",
       "editor": "select"
     },
+    "llmProvider": {
+      "title": "LLM Provider",
+      "type": "string",
+      "description": "Which model backend to use. 'auto' tries Gemini Flash latest, then Claude.",
+      "enum": ["auto", "gemini", "claude"],
+      "default": "auto",
+      "editor": "select"
+    },
     "geminiApiKey": {
       "title": "Gemini API Key",
       "type": "string",
-      "description": "Google Gemini API key for AI-driven skill dependency graph & assessment generation. Can also be set as GEMINI_API_KEY environment variable.",
+      "description": "Google Gemini API key (model: gemini-flash-latest). Can also be set as GEMINI_API_KEY.",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "anthropicApiKey": {
+      "title": "Anthropic API Key",
+      "type": "string",
+      "description": "Claude API key (model: claude-sonnet-4-5). Can also be set as ANTHROPIC_API_KEY.",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "llmApiKey": {
+      "title": "Generic LLM API Key",
+      "type": "string",
+      "description": "Optional single key used when provider-specific keys are empty. Interpreted according to LLM Provider.",
       "editor": "textfield",
       "isSecret": true
     },
@@ -74,6 +96,12 @@
       "description": "Optional Apify API token for live web scraping & search discovery.",
       "editor": "textfield",
       "isSecret": true
+    },
+    "email": {
+      "title": "Notification Email",
+      "type": "string",
+      "description": "Optional email address to automatically send the formatted TechPath HTML report to via apify/send-email Actor.",
+      "editor": "textfield"
     }
   },
   "required": ["goal"]

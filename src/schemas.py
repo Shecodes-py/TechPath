@@ -1,11 +1,22 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+
+SECRET_INPUT_FIELDS = {
+    "geminiApiKey",
+    "anthropicApiKey",
+    "llmApiKey",
+    "apifyToken",
+}
 
 
 class LearnerInput(BaseModel):
     """Input payload accepted by the TechPath Actor."""
+    model_config = ConfigDict(extra="ignore")
+
     goal: str = Field(
         default="Machine Learning Engineer",
+        min_length=1,
         description="Target technical career role or objective."
     )
     currentLevel: str = Field(
@@ -18,6 +29,8 @@ class LearnerInput(BaseModel):
     )
     hoursPerWeek: int = Field(
         default=8,
+        ge=1,
+        le=168,
         description="Dedicated study hours per week."
     )
     location: str = Field(
@@ -36,14 +49,47 @@ class LearnerInput(BaseModel):
         default="deep",
         description="Detail level of generated roadmap ('standard' or 'deep')."
     )
+    llmProvider: str = Field(
+        default="auto",
+        description="LLM backend: auto, gemini, or claude."
+    )
     geminiApiKey: Optional[str] = Field(
         default=None,
         description="Optional Google Gemini API key provided directly in input."
+    )
+    anthropicApiKey: Optional[str] = Field(
+        default=None,
+        description="Optional Anthropic API key for Claude."
+    )
+    llmApiKey: Optional[str] = Field(
+        default=None,
+        description="Generic LLM key used when provider-specific keys are omitted."
     )
     apifyToken: Optional[str] = Field(
         default=None,
         description="Optional Apify API token provided directly in input."
     )
+    email: Optional[str] = Field(
+        default=None,
+        description="Optional email address to receive report via apify/send-email Actor."
+    )
+
+    def public_profile(self) -> "LearnerPublicProfile":
+        return LearnerPublicProfile.model_validate(
+            self.model_dump(exclude=SECRET_INPUT_FIELDS | {"llmProvider"})
+        )
+
+
+class LearnerPublicProfile(BaseModel):
+    """Learner fields that are safe to persist in datasets and reports."""
+    goal: str
+    currentLevel: str
+    knownSkills: List[str]
+    hoursPerWeek: int
+    location: str
+    interests: List[str]
+    learningPreferences: List[str]
+    depth: str
 
 
 class SkillGap(BaseModel):
@@ -136,7 +182,7 @@ class RoadmapStage(BaseModel):
 
 class TechPathOutput(BaseModel):
     """Complete output dataset produced by the TechPath Actor."""
-    profile: LearnerInput
+    profile: LearnerPublicProfile
     targetRole: str
     summaryPitch: str
     skillGaps: List[SkillGap]

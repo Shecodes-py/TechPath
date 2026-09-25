@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechPath Learning Intelligence — Interactive Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen p-4 md:p-8">
+
+  <!-- Main Container -->
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Top Banner / Profile Header -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-3">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            TechPath Intelligence Engine Active
+          </div>
+          <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+            Target Role: <span class="text-indigo-400">Machine Learning Engineer</span>
+          </h1>
+          <p class="text-sm text-slate-400 mt-1 max-w-2xl">
+            Tailored 6-stage development path for a <strong class="text-slate-200">Beginner in Nigeria</strong> focusing on <strong class="text-slate-200">Healthcare AI & NLP</strong> (8 hrs/week).
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-center text-xs">
+          <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+            <span class="block text-slate-400">Current Level</span>
+            <strong class="text-sm font-semibold text-amber-400">Beginner</strong>
+          </div>
+          <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+            <span class="block text-slate-400">Location</span>
+            <strong class="text-sm font-semibold text-blue-400">Nigeria 🇳🇬</strong>
+          </div>
+          <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+            <span class="block text-slate-400">Weekly Study</span>
+            <strong class="text-sm font-semibold text-emerald-400">8 Hours/Wk</strong>
+          </div>
+          <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+            <span class="block text-slate-400">Domain Focus</span>
+            <strong class="text-sm font-semibold text-purple-400">Healthcare AI</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Known Skills Tags -->
+      <div class="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center gap-2 text-xs">
+        <span class="text-slate-400 font-medium">Known Skills:</span>
+        <span class="px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 font-semibold border border-indigo-500/20">Python Basics</span>
+        <span class="text-slate-400 text-xs italic ml-2">Prerequisite rule enforced: Foundations assigned before advanced RAG/Agents.</span>
+      </div>
+    </div>
+
+    <!-- Skill Gap Diagnostic Alert -->
+    <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-5">
+      <div class="flex items-start gap-3">
+        <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400 shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <div>
+          <h3 class="font-bold text-amber-400 text-sm">Prerequisite Skill Gap Diagnostics</h3>
+          <p class="text-xs text-slate-400 mt-1">
+            Before jumping into Deep Learning or LLM Agents, TechPath identified 2 mandatory foundational gaps you must fulfill:
+          </p>
+          <div class="grid md:grid-cols-2 gap-3 mt-3">
+            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs space-y-1">
+              <div class="flex justify-between items-center font-bold">
+                <span class="text-amber-400">[Foundation] Linear Algebra & Statistics</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-normal">90% Req</span>
+              </div>
+              <p class="text-slate-400">Essential for understanding model weights, gradient descent loss, and probability in ML.</p>
+            </div>
+            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs space-y-1">
+              <div class="flex justify-between items-center font-bold">
+                <span class="text-amber-400">[Core] Data Structures & Algorithms</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-normal">88% Req</span>
+              </div>
+              <p class="text-slate-400">Critical for algorithm efficiency, memory management, and coding interviews.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Navigation Tabs -->
+    <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-2 text-sm font-medium">
+      <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="tab-btn px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold transition">
+        🗺️ 6-Stage Roadmap
+      </button>
+      <button onclick="switchTab('assessment')" id="tab-btn-assessment" class="tab-btn px-4 py-2 rounded-lg bg-slate-900 text-slate-400 hover:text-white transition">
+        📝 Interactive Quizzes
+      </button>
+      <button onclick="switchTab('capstone')" id="tab-btn-capstone" class="tab-btn px-4 py-2 rounded-lg bg-slate-900 text-slate-400 hover:text-white transition">
+        🏆 Portfolio Capstone Brief
+      </button>
+      <button onclick="switchTab('opportunities')" id="tab-btn-opportunities" class="tab-btn px-4 py-2 rounded-lg bg-slate-900 text-slate-400 hover:text-white transition">
+        🎯 Hackathon Matches
+      </button>
+    </div>
+
+    <!-- TAB 1: ROADMAP TIMELINE -->
+    <div id="tab-roadmap" class="tab-content space-y-6">
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+        <button onclick="selectStage(1)" id="stage-btn-1" class="stage-nav-btn p-3 rounded-xl border border-indigo-500/40 bg-indigo-500/10 text-left transition">
+          <span class="block text-[10px] font-semibold text-indigo-400">STAGE 1</span>
+          <strong class="text-xs text-white">Foundations</strong>
+        </button>
+        <button onclick="selectStage(2)" id="stage-btn-2" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
+          <span class="block text-[10px] font-semibold text-slate-400">STAGE 2</span>
+          <strong class="text-xs text-white">Core Skills</strong>
+        </button>
+        <button onclick="selectStage(3)" id="stage-btn-3" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
+          <span class="block text-[10px] font-semibold text-slate-400">STAGE 3</span>
+          <strong class="text-xs text-white">Specialization</strong>
+        </button>
+        <button onclick="selectStage(4)" id="stage-btn-4" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
+          <span class="block text-[10px] font-semibold text-slate-400">STAGE 4</span>
+          <strong class="text-xs text-white">Build & Deploy</strong>
+        </button>
+        <button onclick="selectStage(5)" id="stage-btn-5" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
+          <span class="block text-[10px] font-semibold text-slate-400">STAGE 5</span>
+          <strong class="text-xs text-white">Prove & Publish</strong>
+        </button>
+        <button onclick="selectStage(6)" id="stage-btn-6" class="stage-nav-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-left opacity-70 hover:opacity-100 transition">
+          <span class="block text-[10px] font-semibold text-slate-400">STAGE 6</span>
+          <strong class="text-xs text-white">Advance (LLMs/Agents)</strong>
+        </button>
+      </div>
+
+      <!-- Stage Detail Display Card -->
+      <div id="stage-detail-container" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+        <!-- Content injected dynamically via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 2: INTERACTIVE QUIZZES -->
+    <div id="tab-assessment" class="tab-content hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+        <h2 class="text-lg font-bold text-white">Stage Readiness Skill Checks</h2>
+        <p class="text-xs text-slate-400">
+          Assessments verify whether you've actually mastered a stage before moving forward. Try answering the sample prompt below:
+        </p>
+
+        <div class="p-5 rounded-xl border border-slate-800 bg-slate-950/60 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 rounded bg-indigo-500/10 text-indigo-400 font-semibold text-xs">Stage 1 Coding Prompt</span>
+            <span class="text-xs text-slate-400">Topic: Python & Complexity</span>
+          </div>
+
+          <p class="text-sm font-semibold text-slate-200">
+            Question: Write a Python function <code class="bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs text-indigo-300">filter_even_squares(numbers)</code> that takes a list of integers, filters out odd numbers, squares the even numbers, and returns the result in reverse order. What is its time and space complexity?
+          </p>
+
+          <div class="space-y-2">
+            <button onclick="checkAnswer(1)" class="w-full text-left p-3 rounded-lg border border-slate-800 bg-slate-900 hover:border-indigo-500 transition text-xs flex justify-between items-center text-slate-300">
+              <span>A) Time: O(N²), Space: O(N²) using nested loops</span>
+            </button>
+            <button onclick="checkAnswer(2)" class="w-full text-left p-3 rounded-lg border border-slate-800 bg-slate-900 hover:border-indigo-500 transition text-xs flex justify-between items-center text-slate-300">
+              <span>B) Time: O(N), Space: O(N) using list comprehension & reverse iterator</span>
+            </button>
+            <button onclick="checkAnswer(3)" class="w-full text-left p-3 rounded-lg border border-slate-800 bg-slate-900 hover:border-indigo-500 transition text-xs flex justify-between items-center text-slate-300">
+              <span>C) Time: O(1), Space: O(1) in-place dictionary modification</span>
+            </button>
+          </div>
+
+          <div id="quiz-feedback" class="hidden p-3 rounded-lg text-xs"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: PORTFOLIO CAPSTONE BRIEF -->
+    <div id="tab-capstone" class="tab-content hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              Niche Focus: Healthcare AI
+            </span>
+            <h2 class="text-xl font-bold mt-2 text-white">Production-Grade Healthcare AI Intelligence System</h2>
+          </div>
+          <button class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs transition">
+            Export Brief (PDF / Markdown)
+          </button>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Problem Statement</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              Develop an end-to-end, deployed AI platform designed for Healthcare AI. The system ingests raw medical diagnostic data, applies PyTorch neural network classification models, and exposes a real-time containerized REST API.
+            </p>
+
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 pt-2">Suggested Tech Stack</h3>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">Python 3.11</span>
+              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">PyTorch</span>
+              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">FastAPI</span>
+              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">Docker</span>
+              <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">Apify SDK</span>
+            </div>
+          </div>
+
+          <div class="space-y-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Milestone Checklist</h3>
+            <div class="space-y-2 text-xs text-slate-300">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked class="rounded accent-purple-600">
+                <span>Milestone 1: Data acquisition and exploratory data analysis</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="rounded accent-purple-600">
+                <span>Milestone 2: Baseline ML model vs PyTorch deep neural network</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="rounded accent-purple-600">
+                <span>Milestone 3: FastAPI microservice wrapper and Docker containerization</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="rounded accent-purple-600">
+                <span>Milestone 4: Interactive frontend dashboard and cloud deployment</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: HACKATHON MATCHES -->
+    <div id="tab-opportunities" class="tab-content hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+        <h2 class="text-lg font-bold text-white">Matched Practical Opportunities</h2>
+        <p class="text-xs text-slate-400">
+          Real-world hackathons, open source projects, and internships matched specifically to your growth stage in Nigeria:
+        </p>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <!-- Card 1 -->
+          <div class="p-5 rounded-xl border border-indigo-500/30 bg-indigo-500/5 flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between text-xs mb-2">
+                <span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-bold">Hackathon</span>
+                <span class="text-slate-400">Oct 15, 2026</span>
+              </div>
+              <h3 class="font-bold text-sm text-white">Apify × She Code Africa Hackathon 2026</h3>
+              <p class="text-xs text-slate-400 mt-2">
+                Build reusable Apify Actors and web intelligence tools. Beginner & Intermediate friendly with cash prizes and mentorship.
+              </p>
+            </div>
+            <a href="https://apify.com/store" target="_blank" class="w-full py-2 text-center rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition block">
+              Apply / Learn More ↗
+            </a>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="p-5 rounded-xl border border-slate-800 bg-slate-950/60 flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between text-xs mb-2">
+                <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 font-bold">Competition</span>
+                <span class="text-slate-400">Nov 01, 2026</span>
+              </div>
+              <h3 class="font-bold text-sm text-white">Kaggle Healthcare AI Challenge</h3>
+              <p class="text-xs text-slate-400 mt-2">
+                Build tabular & medical imaging classification models. Perfect for proving Healthcare AI skills.
+              </p>
+            </div>
+            <a href="https://www.kaggle.com/" target="_blank" class="w-full py-2 text-center rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-xs transition block border border-slate-800">
+              View Challenge ↗
+            </a>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="p-5 rounded-xl border border-slate-800 bg-slate-950/60 flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between text-xs mb-2">
+                <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Internship</span>
+                <span class="text-slate-400">Dec 01, 2026</span>
+              </div>
+              <h3 class="font-bold text-sm text-white">Open Source AI Engineering Fellowship</h3>
+              <p class="text-xs text-slate-400 mt-2">
+                Remote 3-month fellowship bridging early-career developers in Africa into global engineering roles.
+              </p>
+            </div>
+            <a href="https://shecodeafrica.org/" target="_blank" class="w-full py-2 text-center rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-xs transition block border border-slate-800">
+              Apply Now ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const stageData = {
+      1: {
+        title: "Stage 1: Foundations",
+        desc: "Master core programming, version control, and prerequisite mathematics before advancing.",
+        topics: ["Python Basics", "Git & GitHub", "NumPy & Data Manipulation", "Basic Statistics"],
+        resources: [
+          { title: "Python for Everybody Specialization", type: "Course", url: "https://www.py4e.com/", hrs: 15, taught: ["Python syntax", "Data Structures"] },
+          { title: "Git & GitHub Crash Course", type: "YouTube", url: "https://www.youtube.com/watch?v=RGOj5yH7evE", hrs: 2, taught: ["Git", "Version Control"] }
+        ],
+        project: "Automated Data Processing & Extraction CLI Script"
+      },
+      2: {
+        title: "Stage 2: Core Skills",
+        desc: "Build solid fundamentals in Data Structures, Data Analysis, and Supervised Machine Learning.",
+        topics: ["Data Structures & Algorithms", "SQL Queries", "Supervised Learning", "Scikit-Learn"],
+        resources: [
+          { title: "Scikit-Learn Official User Guide", type: "Documentation", url: "https://scikit-learn.org/", hrs: 10, taught: ["Scikit-Learn", "Model Training"] }
+        ],
+        project: "Supervised Prediction Engine & Evaluation Pipeline"
+      },
+      3: {
+        title: "Stage 3: Specialization",
+        desc: "Dive deep into modern Deep Learning, Neural Networks, PyTorch, and Healthcare AI.",
+        topics: ["Neural Networks", "PyTorch", "Computer Vision / NLP", "Healthcare AI Data"],
+        resources: [
+          { title: "Deep Learning Specialization - DeepLearning.AI", type: "Course", url: "https://www.coursera.org/specializations/deep-learning", hrs: 30, taught: ["PyTorch", "Neural Nets"] }
+        ],
+        project: "Healthcare AI Diagnostic Model Implementation"
+      },
+      4: {
+        title: "Stage 4: Build & Deploy",
+        desc: "Transform standalone models into robust, containerized microservices.",
+        topics: ["FastAPI REST APIs", "Docker Containerization", "API Deployment", "Model Serving"],
+        resources: [
+          { title: "Deploying ML Models with FastAPI & Docker", type: "Documentation", url: "https://fastapi.tiangolo.com/", hrs: 8, taught: ["FastAPI", "Docker"] }
+        ],
+        project: "Containerized ML Inference Microservice"
+      },
+      5: {
+        title: "Stage 5: Prove & Publish",
+        desc: "Validate your skills through hackathons, open-source PRs, and publishing Apify Actors.",
+        topics: ["Hackathon Entry", "Open Source PRs", "Apify Actor Development"],
+        resources: [
+          { title: "Apify Open Source Actor Development Guide", type: "Documentation", url: "https://apify.com/store", hrs: 5, taught: ["Apify SDK", "Actor Publishing"] }
+        ],
+        project: "Apify Open Source Cloud Tool / Actor"
+      },
+      6: {
+        title: "Stage 6: Advance (LLMs & Agents)",
+        desc: "Expand into cutting-edge architectures: Large Language Models, RAG Systems, and AI Agents.",
+        topics: ["RAG & Vector DBs", "AI Agents & LangChain", "MLOps & Monitoring"],
+        resources: [
+          { title: "Full Stack LLM & RAG Application Architecture", type: "Course", url: "https://www.deeplearning.ai/", hrs: 12, taught: ["RAG", "Vector Search"] }
+        ],
+        project: "Autonomous AI Agent System with Tool Calling"
+      }
+    };
+
+    function selectStage(num) {
+      document.querySelectorAll('.stage-nav-btn').forEach(btn => {
+        btn.classList.remove('border-indigo-500/40', 'bg-indigo-500/10');
+        btn.classList.add('border-slate-800', 'bg-slate-900', 'opacity-70');
+      });
+      const activeBtn = document.getElementById(`stage-btn-${num}`);
+      activeBtn.classList.remove('border-slate-800', 'bg-slate-900', 'opacity-70');
+      activeBtn.classList.add('border-indigo-500/40', 'bg-indigo-500/10');
+
+      const data = stageData[num];
+      const container = document.getElementById('stage-detail-container');
+      container.innerHTML = `
+        <div>
+          <h2 class="text-xl font-bold text-white">${data.title}</h2>
+          <p class="text-xs text-slate-400 mt-1">${data.desc}</p>
+        </div>
+
+        <div class="space-y-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Focus Topics:</span>
+          <div class="flex flex-wrap gap-2">
+            ${data.topics.map(t => `<span class="px-2.5 py-1 rounded bg-indigo-500/10 text-indigo-400 font-semibold text-xs border border-indigo-500/20">${t}</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Curated Web Resources (${data.resources.length}):</span>
+          <div class="grid md:grid-cols-2 gap-3">
+            ${data.resources.map(r => `
+              <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/60 flex flex-col justify-between space-y-2">
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-semibold text-[10px]">${r.type}</span>
+                    <span class="text-slate-400 text-[10px]">${r.hrs} hrs est.</span>
+                  </div>
+                  <strong class="text-xs font-semibold block text-slate-200">${r.title}</strong>
+                  <div class="flex flex-wrap gap-1 mt-2">
+                    ${r.taught.map(st => `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-400">${st}</span>`).join('')}
+                  </div>
+                </div>
+                <a href="${r.url}" target="_blank" class="text-xs text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1 pt-1">
+                  Open Resource ↗
+                </a>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-purple-500/5 border border-purple-500/20 text-xs space-y-1">
+          <span class="font-bold text-purple-400 uppercase tracking-wider text-[10px]">Reinforcement Project Brief:</span>
+          <p class="font-semibold text-sm text-slate-200">${data.project}</p>
+        </div>
+      `;
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white');
+        btn.classList.add('bg-slate-900', 'text-slate-400');
+      });
+
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      activeBtn.classList.remove('bg-slate-900', 'text-slate-400');
+      activeBtn.classList.add('bg-indigo-600', 'text-white');
+    }
+
+    function checkAnswer(opt) {
+      const fb = document.getElementById('quiz-feedback');
+      fb.classList.remove('hidden', 'bg-emerald-500/10', 'text-emerald-400', 'bg-rose-500/10', 'text-rose-400');
+      if (opt === 2) {
+        fb.classList.add('bg-emerald-500/10', 'text-emerald-400');
+        fb.innerHTML = "✅ <strong>Correct!</strong> Time complexity is O(N) because we iterate through the array once, and space is O(N) for storing the new filtered list.";
+      } else {
+        fb.classList.add('bg-rose-500/10', 'text-rose-400');
+        fb.innerHTML = "❌ <strong>Incorrect.</strong> Option B is correct. Time complexity is O(N) (single pass), and space complexity is O(N).";
+      }
+    }
+
+    // Initialize Stage 1 on load
+    selectStage(1);
+  </script>
+
+</body>
+</html>
