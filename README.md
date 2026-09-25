@@ -44,7 +44,8 @@ Once you click Start, TechPath's own code (`main.py`) runs on Apify's servers. T
 
 This is genuine Actor-to-Actor composition, not a single monolithic scraper: TechPath's code calls `Actor.call(actor_id=..., run_input=...)`, which starts each of those Actors as its own independent run, waits for it to finish, and pulls its dataset back in. Nothing here is hardcoded — every resource returned is whatever those Actors find live, at the exact moment you run TechPath.
 
-![Actor composition screenshot](./screenshots/actor-source-calls.png)
+<img width="1657" height="829" alt="Screenshot 2026-09-25 115136" src="https://github.com/user-attachments/assets/a8747e31-6142-41fd-bcf9-3300200ac748" />
+
 *Screenshot to insert: either the `main.py` source showing the `Actor.call()` lines, or the Console "Runs" view showing the nested `google-search-scraper` and `youtube-scraper` runs kicking off underneath your TechPath run.*
 
 ### 3. The LLM structures the raw data into a roadmap
@@ -55,7 +56,8 @@ Raw scraped titles, URLs, and descriptions are just a messy list on their own �
 
 Each roadmap stage is pushed to the Actor's dataset as its own row — one `Actor.push_data()` call per stage — giving you structured, machine-readable output. At the same time, TechPath renders a styled HTML version of the same roadmap and saves it to the key-value store under the key `REPORT`, so a non-technical learner can open one link and read a clean page instead of raw JSON.
 
-![Output schema / dataset screenshot](./screenshots/output-dataset.png)
+<img width="1591" height="757" alt="Screenshot 2026-09-25 113846" src="https://github.com/user-attachments/assets/39bcd2d6-4297-4802-9229-529e3b05bbf4" />
+
 *Screenshot to insert: the Storage → Dataset tab, showing the actual roadmap-stage rows TechPath returned for a real 
 
 <img width="1080" height="1348" alt="189037" src="https://github.com/user-attachments/assets/1f61e5dc-5523-49f5-9073-f8db34d86d2b" />
@@ -111,7 +113,8 @@ TechPath uses a **pay-per-event (PPE)** pricing model — you're charged for wha
 | `apify-actor-start` | Charged once when your roadmap run starts |
 | `apify-default-dataset-item` | Charged per roadmap stage returned |
 
-*(Exact prices are set in the Monetization tab — update this section once pricing is finalized.)*
+<img width="1621" height="719" alt="Screenshot 2026-09-25 115354" src="https://github.com/user-attachments/assets/f36f8d76-4b06-40f3-9836-8b087bda3a8c" />
+
 
 ## Team
 
@@ -119,7 +122,7 @@ Udotong Peace
 
 Mayowa Titilola 
 
-Annie
+Obiajulum Ndubuisi
 
 **Track:** EduTech — Access to education and scholarships
 **Built for:** Apify x She Code Africa BuildHer Hackathon 2026 — *Ship and Earn Africa*
